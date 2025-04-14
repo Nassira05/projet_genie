@@ -17,5 +17,4 @@ python-dotenv==1.0.0
 python-dateutil==2.8.2
 email-validator==2.0.0.post2
 
-# Uploads/files
-secure-filename==1.1.1  # Pour werkzeug.utils.secure_filename
+

@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 import secrets
-from werkzeug.utils import secure_filename  # Ajoutez cette ligne
+from werkzeug.utils import secure_filename  # 
 from datetime import datetime, date
 from sqlalchemy import desc
 import os

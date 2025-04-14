@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistance Virtuelle - Nouveaux Bacheliers</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/page.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .notification-badge {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            font-size: 12px;
+            margin-left: 5px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Mobile Menu Styles */
+        .menu-toggle {
+            display: none;
+            cursor: pointer;
+            color: white;
+            font-size: 1.8rem;
+            padding: 10px;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .menu {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                max-width: 300px;
+                height: 100vh;
+                background-color: #2c3e50;
+                flex-direction: column;
+                align-items: flex-start;
+                padding-top: 80px;
+                transition: right 0.3s ease;
+                z-index: 999;
+            }
+            
+            .menu.active {
+                right: 0;
+            }
+            
+            .menu li {
+                width: 100%;
+                padding: 10px 20px;
+            }
+            
+            .dropdown-menu {
+                position: static;
+                display: none;
+                width: 100%;
+                box-shadow: none;
+                background-color: rgba(0,0,0,0.1);
+            }
+            
+            .dropdown:hover .dropdown-menu {
+                display: none;
+            }
+            
+            .dropdown.active .dropdown-menu {
+                display: block;
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .info {
+                flex-wrap: wrap;
+            }
+            
+            .card {
+                width: 45%;
+                margin-bottom: 20px;
+            }
+            
+            .photo-card {
+                width: 45%;
+            }
+            
+            .announcement-card {
+                flex-direction: column;
+            }
+            
+            .announcement-image {
+                width: 100%;
+                margin-top: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .search-form input {
+                width: 80%;
+            }
+            
+            .card {
+                width: 100%;
+            }
+            
+            .photo-card {
+                width: 100%;
+            }
+            
+            .contact-container {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .search-form {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .search-form input {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .search-form button {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="#"> StartUni</a>
+            </div>
+            <div class="menu-toggle">☰</div>
+            <ul class="menu">
+                <li><a href="page_acceuil">Accueil</a></li>
+                <li><a href="#">Orientation</a></li>
+                <li class="dropdown">
+                    <a href="#">Support Administratif <i class='bx bx-chevron-down'></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('renseignement') }}">Renseignement sur les filières</a></li>
+                        <li><a href="{{ url_for('page_inscription') }}">Étapes de l'inscription</a></li>
+                        <li><a href="{{ url_for('aide') }}">Accès aux aides</a></li>
+                        <li><a href="{{ url_for('gestion') }}">Gestion Documents administratifs</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="{{ url_for('pla') }}">Planning 
+                        {% if events_count > 0 %}
+                        <span class="notification-badge">{{ events_count }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li><a href="{{ url_for('guide_academique') }}">Guide Académique</a></li>
+                <li><a href="{{ url_for('faq') }}">FAQ</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="hero">
+            <h1>Bienvenue sur votre guide StartUni</h1>
+            <p>Retrouvez toutes les informations pour bien débuter votre parcours universitaire.</p>
+            <form action="#" method="get" class="search-form">
+                <input type="text" placeholder="Que cherchez-vous ?" name="query">
+                <button type="submit">Rechercher</button>
+            </form>
+        </div>
+    </header>
+
+    <main>
+        <section class="info">
+            <div class="card">
+                <h2>Renseignez-vous sur les filières disponibles</h2>
+                <p>Découvrez les différentes filières proposées et choisissez celle qui correspond à vos intérêts et à vos objectifs professionnels.</p>
+                <a href="#">Voir les formations</a>
+            </div>
+            <div class="card">
+                <h2>Besoin de conseils ?</h2>
+                <p>Obtenez des conseils personnalisés pour bien orienter votre parcours universitaire. Nous vous aidons à faire les bons choix en fonction de vos aspirations et de vos compétences.</p>
+                <a href="#">Obtenez des conseils</a>
+            </div>
+            <div class="card">
+                <h2>Personnalisez votre planning</h2>
+                <p>Adaptez votre emploi du temps en fonction de votre filière et de vos disponibilités. Recevez des notifications pour les échéances importantes et organisez vos journées de manière optimale.</p>
+                <a href="#">Organiser mon planning</a>
+            </div>
+        </section>
+    
+        <section class="photo-section">
+            <h2 class="section-title">Notre global Campus</h2>
+            <p class="section-description">
+                L'Université de Djibouti dispose de trois sites localisés dans différents endroits. Ces campus offrent des installations modernes et adaptées à la formation des étudiants. Chaque site est conçu pour répondre aux besoins spécifiques des différentes filières d'études.
+            </p> 
+            <div class="photo-cards">
+                <div class="photo-card">
+                    <img src="{{ url_for('static', filename='Images/cap.jpg') }}" alt="Site 1">
+                    <div class="photo-caption">Site 1 : Balbala</div>
+                </div>
+                <div class="photo-card">
+                    <img src="{{ url_for('static', filename='Images/260px-Uniofdjib.jpg') }}" alt="Site 2">
+                    <div class="photo-caption">Site 2 : Centre Ville</div>
+                </div>
+                <div class="photo-card">
+                    <img src="{{ url_for('static', filename='Images/univ.jpg') }}" alt="Site 3">
+                    <div class="photo-caption">Site 3: Centre Ville</div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="announcements">
+            <h2>Nos Annonces Importantes</h2>
+            <div class="announcement-card">
+                <div class="announcement-text">
+                    <h3>Rentrée Scolaire 2025 - Informations importantes</h3>
+                    <p><strong>Veuillez lire attentivement les dates et informations sur la photo ci-contre.</strong></p>
+                    <p>Nous vous invitons à consulter les dates importantes de la rentrée scolaire et à ne rien manquer des étapes d'inscription et d'orientation.</p>
+                    <p><strong>Notez bien :</strong> Les inscriptions en ligne débutent le 15 juillet. Assurez-vous de vous inscrire avant la date limite pour éviter toute complication.</p>
+                    <p>Pour toute question concernant l'inscription ou la rentrée, nous vous encourageons à consulter le site officiel de l'université pour des informations détaillées et des réponses à vos questions.</p>
+                    <p>Restez attentifs à ces annonces et soyez prêts pour une rentrée réussie !</p>
+                    <p><strong>Consulter le site officiel de l'université :</strong> <a href="https://www.univ.edu.dj" target="_blank" class="site_lien">https://www.univ.edu.dj</a></p>
+                </div>
+                <div class="announcement-image">
+                    <img src="{{ url_for('static', filename='Images/Datesaretenir23-724x1024.jpg') }}" alt="Dates de la rentrée">
+                </div>
+            </div>
+        </section>
+        
+        <section class="contact-section">
+            <h2>Contactez-Nous</h2>
+            <p class="contact-description">
+                Vous avez des questions ou besoin d'informations supplémentaires ? N'hésitez pas à nous contacter !
+            </p>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h3>Nos Coordonnées</h3>
+                    <p><strong>Adresse :</strong> Université de Djibouti
+                        Campus de Balbala</p>
+                    <p><strong>Téléphone :</strong>  (+253)21315555 </p>
+                    <p><strong>Email :</strong> <a href="mud@univ.edu.dj" target="_blank">ud@univ.edu.dj</a></p>
+                    <p><strong>Site Web :</strong> <a href="https://www.univ.edu.dj" target="_blank">www.univ.dj</a></p>
+                </div>
+                <div class="contact-form">
+                    <h3>Envoyez-nous un message</h3>
+                    <form action="#" method="post">
+                        <input type="text" name="name" placeholder="Votre nom" required>
+                        <input type="email" name="email" placeholder="Votre email" required>
+                        <textarea name="message" rows="5" placeholder="Votre message" required></textarea>
+                        <button type="submit">Envoyer</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2025 Assistance Virtuelle - Tous droits réservés</p>
+            <div class="footer-links">
+                <a href="#">Contactez-nous</a> 
+                <span>|</span> 
+                <a href="#">Mentions légales</a>
+            </div>
+        </div>
+    </footer>
+
+    <div class="chatbot-container">
+        <a href="{{ url_for('chatbox') }}">
+            <button class="chatbot-button" onclick="openChatbot()">💬</button>
+        </a>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const menu = document.querySelector('.menu');
+            const dropdowns = document.querySelectorAll('.dropdown');
+            
+            menuToggle.addEventListener('click', function() {
+                menu.classList.toggle('active');
+            });
+            
+            // Close menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!menu.contains(e.target) && e.target !== menuToggle) {
+                    menu.classList.remove('active');
+                }
+            });
+            
+            // Dropdown functionality for mobile
+            dropdowns.forEach(dropdown => {
+                const link = dropdown.querySelector('a');
+                
+                link.addEventListener('click', function(e) {
+                    if (window.innerWidth <= 768) {
+                        e.preventDefault();
+                        dropdown.classList.toggle('active');
+                    }
+                });
+            });
+        });
+
+        function openChatbot() {
+            document.getElementById('chatbot').style.display = 'block';
+        }
+
+        function closeChatbot() {
+            document.getElementById('chatbot').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

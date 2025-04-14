@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gérer les Lieux - Assistant Virtuel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Réinitialisation du style de base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Fixer le corps de la page */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f3f4f7;
+    display: flex;
+    height: 100vh;
+    overflow: hidden; /* Empêche le défilement global de la page */
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background: linear-gradient(135deg, #6a5bff, #4e4a94);
+    color: white;
+    position: fixed;
+    height: 100%;
+    padding: 20px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto; /* Permet à la sidebar de défiler si le contenu est trop long */
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background: linear-gradient(135deg, #6a5bff, #4e4a94);
+    color: white;
+    position: fixed;
+    height: 100%;
+    padding: 20px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.admin-info {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.admin-info img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    border: 3px solid #fff;
+}
+
+.admin-info p {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.sidebar ul {
+    list-style: none;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.sidebar ul li {
+    width: 100%;
+    padding: 15px;
+    text-align: left;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+}
+
+.sidebar ul li a i {
+    margin-right: 10px;
+}
+
+.sidebar ul li:hover {
+    background: #5d53cb;
+    cursor: pointer;
+    transform: scale(1.05);
+}
+
+/* Contenu principal */
+.main-content {
+    margin-left: 260px;
+    padding: 22px;
+    width: calc(100% - 260px);
+    background-color: #f4f7fa;
+    overflow-y: auto; /* Permet au contenu principal de défiler s'il est trop long */
+    height: 100vh; /* Fixer la hauteur du contenu principal */
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-header h1 {
+    font-size: 24px;
+    color: #333;
+}
+
+.dashboard-header button {
+    padding: 10px 20px;
+    background-color: #6a5bff;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.dashboard-header button:hover {
+    background-color: #4e4a94;
+}
+
+.section {
+    background: white;
+    padding: 30px;
+    margin-top: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.section h2 {
+    color: #333;
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+/* Amélioration du tableau */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th, table td {
+    padding: 15px;
+    text-align: left;
+    font-size: 16px;
+    border: 1px solid #ddd; /* Ajout de bordures aux cellules */
+}
+
+table th {
+    background-color: #f8f8f8;
+    color: #555;
+    font-weight: bold;
+}
+/* Enlever le soulignement des liens */
+a {
+    text-decoration: none;
+}
+
+table td {
+    background-color: white;
+}
+
+table tr:nth-child(even) {
+    background-color: #f9f9f9; /* Ligne paire légèrement différente */
+}
+
+/* Style des boutons dans la cellule */
+table td .btn-container {
+    display: flex;  /* Utilisation du flexbox pour aligner les boutons côte à côte */
+    gap: 10px;  /* Ajout d'un espace entre les boutons */
+    justify-content: start; /* Aligner les boutons à gauche */
+}
+
+/* Style du bouton Modifier */
+.btn-modify {
+    background-color: #6a5bff;
+    color: white;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(255, 165, 0, 0.3); /* Ombre douce */
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.btn-modify:hover {
+    background-color: #4e4a94; /* Changer la couleur au survol */
+    box-shadow: 0 4px 12px rgba(255, 165, 0, 0.5); /* Ombre plus forte */
+    transform: translateY(-2px); /* Légère élévation au survol */
+}
+
+/* Style du bouton Supprimer */
+.btn-delete {
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3); /* Ombre douce */
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.btn-delete:hover {
+    background-color: #f44336;
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.5); /* Ombre plus forte */
+    transform: translateY(-2px); /* Légère élévation au survol */
+}
+
+/* Bouton Ajouter */
+.btn-add {
+    background-color: #6a5bff;
+    color: white;
+    margin: 20px 0;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-add:hover {
+    background-color: #4e4a94;
+}
+
+/* Message si le tableau est vide */
+.no-data {
+    text-align: center;
+    font-size: 18px;
+    color: #777;
+    padding: 20px;
+}
+
+/* Animation pour les sections */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Pied de page */
+.footer {
+    text-align: center;
+    padding: 15px;
+    background: linear-gradient(135deg, #6a5bff, #4e4a94);
+    color: white;
+    border-radius: 10px;
+    margin-top: 30px;
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="admin-info">
+            <img src="{{ url_for('static', filename='image/vhh.jpg') }}" alt="Admin Profile">
+            <p><strong>Admin</strong></p>
+        </div>
+        <ul>
+            <li><a href="{{ url_for('admin') }}"><i class="fas fa-home"></i> Tableau de bord</a></li>
+            <li><a href="{{ url_for('user') }}"><i class="fas fa-users"></i> Gérer les utilisateurs</a></li>
+            <li><a href="{{ url_for('lieux') }}"><i class="fas fa-map-marker-alt"></i> Gérer les lieux</a></li>
+            <li><a href="{{ url_for('docs') }}"><i class="fas fa-file"></i> Gérer les documents</a></li>
+            <li><a href="{{ url_for('deconnexion') }}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="dashboard-header">
+            <h1>Gérer les Lieux</h1>
+            <a href="{{ url_for('deconnexion') }}"><button>Déconnexion</button></a>
+        </div>
+
+        <div class="section">
+            <h2>Liste des Lieux</h2>
+            <a href="{{ url_for('ajouter_lieu') }}"><button class="btn-add">Ajouter un lieu</button></a>
+
+            <!-- Vérifier si la liste des lieux est vide -->
+            {% if lieux|length == 0 %}
+                <div class="no-data">Aucun lieu n'a été ajouté.</div>
+            {% else %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom du lieu</th>
+                            <th>Type</th>
+                            <th>Latitude</th>
+                            <th>Longitude</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lieu in lieux %}
+                        <tr>
+                            <td>{{ lieu.id_lieu }}</td>
+                            <td>{{ lieu.nom_lieu }}</td>
+                            <td>{{ lieu.type_lieu }}</td>
+                            <td>{{ lieu.latitude }}</td>
+                            <td>{{ lieu.longitude }}</td>
+                            <td>{{ lieu.description }}</td>
+                            <td>
+                                <div class="btn-container">
+                                    <a href="{{ url_for('modifier_lieu', index=lieu.id_lieu) }}" class="btn-modify">Modifier</a>
+                                    <a href="{{ url_for('supprimer_lieu', index=lieu.id_lieu) }}" class="btn-delete">Supprimer</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+
+        <div class="footer">
+            &copy; 2025 Assistant Virtuel - Tous droits réservés.
+        </div>
+    </div>
+
+</body>
+</html>

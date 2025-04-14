@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un Lieu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Réinitialisation du style de base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 450px;
+            text-align: center;
+            position: relative;
+        }
+
+        .form-container h2 {
+            color: #333;
+            font-size: 26px;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .input-group i {
+            color: #6a5bff;
+            margin-right: 10px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+            box-sizing: border-box;
+            background-color: transparent;
+            outline: none;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #6a5bff;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 120px;
+        }
+
+        button {
+            padding: 12px;
+            background-color: #6a5bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #4e4a94;
+            transform: translateY(-2px);
+        }
+
+        .success-message {
+            color: #4caf50;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        input:focus, textarea:focus {
+            border: 2px solid #6a5bff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2><i class="fas fa-map-marker-alt"></i> Ajouter un Lieu</h2>
+        <form id="addPlaceForm" action="{{ url_for('ajouter_lieu') }}" method="POST">
+            <div class="input-group">
+                <i class="fas fa-location-arrow"></i>
+                <input type="text" id="nom_lieu" name="nom_lieu" placeholder="Nom du lieu" required>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-cogs"></i>
+                <input type="text" id="type_lieu" name="type_lieu" placeholder="Type du lieu" required>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-compass"></i>
+                <input type="text" id="latitude" name="latitude" placeholder="Latitude" required>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-compass"></i>
+                <input type="text" id="longitude" name="longitude" placeholder="Longitude" required>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-pencil-alt"></i>
+                <textarea id="description" name="description" placeholder="Description du lieu" required></textarea>
+            </div>
+
+            <button type="submit">Ajouter le Lieu</button>
+        </form>
+
+        <div id="successMessage" class="success-message" style="display: none;">
+            <i class="fas fa-check-circle"></i> Lieu ajouté avec succès !
+        </div>
+        
+    </div>
+
+    <script>
+        // Fonction pour traiter le formulaire et afficher un message de succès
+        document.getElementById("addPlaceForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Empêche l'envoi normal du formulaire
+
+            // Récupère les valeurs du formulaire
+            var placeName = document.getElementById("nom_lieu").value;
+            var placeType = document.getElementById("type_lieu").value;
+            var placeLatitude = document.getElementById("latitude").value;
+            var placeLongitude = document.getElementById("longitude").value;
+            var placeDescription = document.getElementById("description").value;
+
+            // Affiche les valeurs dans la console pour vérification
+            console.log("Nom du lieu: " + placeName);
+            console.log("Type du lieu: " + placeType);
+            console.log("Latitude: " + placeLatitude);
+            console.log("Longitude: " + placeLongitude);
+            console.log("Description: " + placeDescription);
+
+            // Envoie les données du formulaire via AJAX (si nécessaire)
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "{{ url_for('ajouter_lieu') }}", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    // Affiche un message de succès après la soumission
+                    document.getElementById("successMessage").style.display = "block";
+                    // Masque le message de succès après 3 secondes
+                    setTimeout(function() {
+                        document.getElementById("successMessage").style.display = "none";
+                    }, 3000);
+                } else {
+                    alert("Erreur lors de l'ajout du lieu. Veuillez réessayer.");
+                }
+            };
+
+            xhr.send("nom_lieu=" + placeName + "&type_lieu=" + placeType + "&latitude=" + placeLatitude + "&longitude=" + placeLongitude + "&description=" + placeDescription);
+        });
+    </script>
+
+</body>
+</html>

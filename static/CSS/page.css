@@ -1,0 +1,767 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Poppins, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+}
+
+/* Change la couleur de la barre de défilement */
+::-webkit-scrollbar {
+    width: 12px; /* Largeur de la barre de défilement */
+}
+
+/* Change la couleur de la "cicatrice" de la barre de défilement */
+::-webkit-scrollbar-thumb {
+    background-color: #4CAF50; /* Couleur du curseur de la barre de défilement */
+    border-radius: 6px; /* Bords arrondis pour un effet plus esthétique */
+}
+
+/* Change la couleur de la barre de défilement quand elle est survolée */
+::-webkit-scrollbar-thumb:hover {
+    background-color: #45a049; /* Couleur lorsque l'on survole la barre */
+}
+
+/* Change la couleur de la partie vide de la barre de défilement */
+::-webkit-scrollbar-track {
+    background-color: #f1f1f1; /* Couleur de fond de la barre de défilement */
+    border-radius: 6px; /* Bords arrondis pour le fond */
+}
+
+
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+header {
+    position: relative;
+    height: 80vh; /* Hauteur du header */
+    background: url('../images/campus.jpg') no-repeat center center/cover;
+    
+    background-attachment: fixed; /* Rend l'image de fond fixe lors du défilement */
+    background-position: center;
+    background-size: cover;
+}
+
+header:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Couche noire avec opacité */
+    z-index: 1; /* Derrière la section hero */
+}
+
+
+.hero {
+    position: relative;
+    z-index: 1; /* Au-dessus de la couche noire */
+    color: white; /* Texte visible sur le fond noir */
+    text-align: center;
+    padding: 150px 20px 50px; /* Espacement en haut ajusté */
+}
+
+.hero h1 {
+    font-size: 4rem; /* Taille augmentée pour le titre */
+    margin-bottom: 10px; /* Espacement réduit entre le titre et le paragraphe */
+}
+
+.hero p {
+    font-size: 1.2rem; /* Taille réduite pour le paragraphe */
+    margin-bottom: 15px; /* Espacement réduit entre le paragraphe et la barre de recherche */
+}
+
+/* Barre de recherche */
+.search-form {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    z-index: 1;
+    position: relative;
+}
+
+.search-form input {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    width: 500px;
+}
+
+.search-form button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #ff8c00;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 3px;
+}
+
+.search-form button:hover {
+    background-color:  #ff8c00;
+}
+
+nav {
+    position: relative;
+    z-index: 2; /* Assure que la barre de navigation reste visible au-dessus de la couche noire */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+   
+    padding: 10px 0;
+}
+nav .logo a {
+    font-size: 1.8rem;
+    color: white;
+    font-weight: bolder;
+}
+
+
+
+
+
+/* Style général pour la barre de navigation */
+nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+
+
+/* Styles de base */
+nav ul li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    padding-bottom: 5px;
+    position: relative;
+}
+
+/* Ajouter un effet de soulignement personnalisé */
+nav ul li a::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #ff8c00; /* Couleur du soulignement */
+    transition: width 0.3s ease;
+}
+
+/* Lors du survol, le soulignement apparaît */
+nav ul li a:hover::after {
+    width: 100%; /* Le soulignement s'étend sous le lien */
+}
+
+
+.menu a{
+    position: relative;
+    z-index: 2; /* Assure que le texte reste visible au-dessus de la couche noire */
+}
+
+
+
+.menu {
+    list-style: none;
+    display: flex;
+    gap: 13px;
+    
+}
+
+.menu li a {
+    color: white;
+    font-size: 1rem;
+    padding: 10px;
+    font-weight: bolder;
+}
+
+/* Main Content */
+main {
+    padding: 40px 20px;
+}
+
+
+.info {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 40px;
+    
+}
+
+.card {
+    background-color:  #fff3f3; 
+    
+
+    padding: 20px 15px; /* Ajuste les espaces internes (haut/bas et gauche/droite) */
+    width: 30%;
+    min-height: 400px;
+    text-align: center;
+    border-radius: 20px;
+    gap: 40px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+   
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Aligne le texte verticalement au centre */
+    letter-spacing: 0.1rem;
+    color: rgb(119, 119, 119);
+    
+   
+}
+
+.card h2 {
+    font-size: 1.5em; /* Taille du texte du titre */
+    margin-bottom: 10px; /* Ajuste l'espace sous le titre */
+    color: rgb(17, 16, 16);
+    
+
+}
+
+.card p {
+    font-size: 1.2em; /* Taille du texte pour le paragraphe */
+    margin-bottom: 10px; /* Ajuste l'espace sous le paragraphe */
+}
+
+.card a {
+    font-size: 1.2em; /* Taille du texte du lien */
+    font-weight: bold;
+    color: #ff8c00;
+}
+
+
+.news {
+    margin-top: 40px;
+}
+
+.news h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.news-item {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.news-item h3 {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+}
+
+.news-item a {
+    color: #ff8c00;
+    font-weight: bold;
+}
+
+.footer {
+    background-color: #2c3e50; /* Couleur sombre pour un style moderne */
+    color: #ffffff; /* Texte en blanc pour un bon contraste */
+    text-align: center;
+    padding: 20px;
+    font-size: 0.9rem;
+    border-top: 3px solid #ff8c00; /* Ligne décorative */
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-content p {
+    margin: 0;
+    flex: 1;
+}
+
+.footer-links {
+    display: flex;
+    gap: 10px;
+}
+
+.footer-links a {
+    color: #ff8c00; /* Couleur vive pour les liens */
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-weight: bold;
+}
+
+.footer-links a:hover {
+    color: #f39c12; /* Couleur plus claire au survol */
+}
+
+.footer-links span {
+    color: #ffffff; /* Séparateur entre les liens */
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-links {
+        justify-content: center;
+    }
+}
+
+/* Chatbot Container */
+.chatbot-container {
+    position: fixed;
+    bottom: 30px;
+    right: 16px;
+    z-index: 1000;
+    text-align: center; /* Aligne les éléments au centre */
+}
+
+/* Profil Icon */
+.profile-icon {
+    position: relative;
+    bottom: 50px; /* Positionne l'icône au-dessus du chatbot */
+    margin-bottom: -30px; /* Réduit l'espacement visuel */
+    font-size: 60px; /* Taille de l'icône */
+    color: #ff8c00; /* Couleur harmonieuse avec le bouton */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Légère ombre */
+    border-radius: 50%; /* Apparence circulaire */
+    background-color: white; /* Fond blanc pour le contraste */
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #ff8c00; /* Bordure orange */
+}
+
+/* Chatbot Button */
+.chatbot-button {
+    background-color: #ff8c00;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 1.8rem;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Chatbot Window */
+.chatbot-window {
+    display: none;
+    position: absolute;
+    bottom: 60px;
+    right: 0;
+    width: 300px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    font-size: 1rem;
+}
+
+/* Chatbot Header */
+.chatbot-header {
+    display: flex;
+    justify-content: space-between;
+    background-color: #002C4C;
+    color: white;
+    padding: 10px;
+    border-radius: 8px 8px 0 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .chatbot-window {
+        width: 90%; /* Ajuste la taille pour les écrans plus petits */
+    }
+
+    .profile-icon {
+        font-size: 50px; /* Taille réduite de l'icône */
+        width: 60px;
+        height: 60px; /* Ajuste l'icône pour les petits écrans */
+    }
+
+    .chatbot-button {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem; /* Réduit la taille du bouton */
+    }
+}
+
+/* Menu déroulant */
+.dropdown {
+    position: relative;
+}
+
+/* Styles pour le menu déroulant */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 160%;
+    left: 0;
+    background-color: white;
+    border-left-width: 1px;
+    border-left-style: solid;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    padding: 10px 0;
+    width: 180px;
+    border-radius: 10px;
+}
+
+/* Pas de soulignement pour le contenu du dropdown */
+.dropdown-menu li a {
+    display: block;
+    padding: 10px 20px;
+    color: #002C4C;
+    font-size: 0.9rem;
+    text-align: left;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Effet de survol pour le contenu du dropdown */
+.dropdown-menu li a:hover {
+    background-color: #f4f4f4;
+    color: #ff8c00;
+}
+
+
+/* Affichage du menu déroulant au survol */
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+/* Titre de section */
+.section-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2.2rem;
+    font-weight: bold;
+   
+    position: relative;
+    display: inline-block;
+}
+.section-title::after {
+    content: "";
+    display: block;
+    width: 100px;
+    height: 3px;
+    background-color:  #ff8c00;
+    border-radius: 2px;
+    margin: 10px auto 0;
+}
+/* Section contenant les photos */
+.photo-section {
+    margin-top: 40px;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Cartes photo */
+.photo-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: center;
+    margin-top: 35px;
+}
+
+/* Style des cartes photo */
+.photo-card {
+    width: 30%; /* Réduit la largeur des cartes */
+    height: 320px; /* Fixe la hauteur des cartes pour éviter l'espace vide */
+    overflow: hidden;
+    border: 2px solid #ccc;
+    transition: transform 0.3s ease-in-out;
+    border-radius: 8px; /* Coins arrondis optionnels */
+    position: relative;
+    display: flex;
+    justify-content: center; /* Centre le contenu dans la carte */
+    align-items: center; /* Centre verticalement */
+}
+
+/* Style des images dans les cartes */
+.photo-card img {
+    width: 100%;
+    height: 100%; /* Prend toute la hauteur de la carte */
+    object-fit: cover; /* Assure que l'image remplit la carte sans distorsion */
+}
+
+/* Légende des photos */
+.photo-caption {
+    position: absolute;
+    bottom: 0; /* Place la légende en bas de la photo */
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.6); /* Fond sombre pour la légende */
+    color: white;
+    font-size: 1.5rem;
+    display: flex;
+    justify-content: center; /* Centre le texte horizontalement */
+    align-items: center; /* Centre le texte verticalement */
+    width: 100%;
+    height: 0; /* Par défaut, la légende est cachée */
+    overflow: hidden; /* Empêche la légende de déborder */
+    transition: height 0.5s ease-in-out, bottom 0.5s ease-in-out; /* Animation pour afficher la légende */
+}
+
+/* Lors du survol de la carte, afficher la légende */
+.photo-card:hover .photo-caption {
+    height: 100%; /* Survol : la légende devient visible */
+    bottom: 0; /* Fait glisser la légende vers le bas */
+}
+
+/* Description de la section */
+.section-description {
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 300;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    letter-spacing: 0.1rem;
+    color: #777;
+}
+
+.announcements {
+    margin: 30px auto;
+    text-align: center;
+    max-width: 1200px; /* Centrer la section et limiter sa largeur */
+}
+
+.announcement-card {
+    display: flex;
+    justify-content: space-between; /* Sépare le texte et l'image de manière harmonieuse */
+    align-items: center;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    overflow: hidden;
+    gap: 20px; /* Espace entre le texte et l'image */
+    margin-top: 30px;
+}
+.announcement-text {
+    flex: 1;
+    text-align: left;
+    padding-right: 20px;
+}
+
+.announcement-text h3 {
+    font-size: 1.8rem;
+    margin-bottom: 40px; /* Réduit l'espace sous le titre */
+    color: #333; /* Couleur subtile pour le titre */
+    font-weight: bold;
+}
+
+.announcement-text p {
+    font-size: 1rem;
+    line-height: 1.8;
+    margin-top: 0; /* Réduit l'espace au-dessus du paragraphe */
+    margin-bottom: 15px;
+    color: #555; /* Texte plus doux pour un aspect moderne */
+}
+
+.announcement-image {
+    width: 400px;
+    height: auto;
+    position: relative; /* Nécessaire pour placer l'étiquette */
+}
+
+.announcement-image img {
+    width: 100%;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+}
+
+.announcement-image .label {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: #007BFF;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Titre avec une ligne décorative */
+.announcements h2 {
+    font-size: 2.2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    position: relative;
+    display: inline-block;
+}
+
+.announcements h2::after {
+    content: "";
+    display: block;
+    width: 100px;
+    height: 3px;
+    background-color:  #ff8c00;
+    border-radius: 2px;
+    margin: 10px auto 0;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .announcement-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+
+    .announcement-text {
+        padding-right: 0;
+    }
+
+    .announcement-image {
+        width: 100%;
+    }
+
+    .announcement-image .label {
+        top: 10px;
+        right: 10px;
+    }
+}
+.site_lien {
+    color: #ff8c00 ; /* Couleur du lien */
+    font-weight: bold;
+    text-decoration: none; /* Retire le soulignement */
+    font-size: 1.1rem;
+    margin-top: 15px;
+    display: inline-block;
+}
+
+.site_lien:hover {
+    text-decoration: underline; /* Soulignement au survol */
+    color: #965200 ;/* Couleur au survol */
+}
+
+.contact-section {
+    background-color: #f8f9fa;
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.contact-section h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    position: relative;
+    display: inline-block;
+}
+
+.contact-section h2::after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 3px;
+    background-color: #ff8c00;
+    margin: 10px auto 0;
+    border-radius: 2px;
+}
+
+.contact-description {
+    font-size: 1rem;
+    margin-bottom: 40px;
+    color: #555;
+}
+
+.contact-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.contact-info, .contact-form {
+    background-color: #ffffff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    min-width: 300px;
+}
+
+.contact-info h3, .contact-form h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.contact-info p {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.contact-info a {
+    color: black;
+    text-decoration: none;
+}
+
+.contact-info a:hover {
+    text-decoration: underline;
+}
+
+.contact-form form input,
+.contact-form form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #333;
+}
+
+.contact-form form button {
+    background-color: #ff8c00;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.contact-form form button:hover {
+    background-color: #e57700;
+}

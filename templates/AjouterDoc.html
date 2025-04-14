@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Réinitialisation du style de base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 450px;
+            text-align: center;
+            position: relative;
+        }
+
+        .form-container h2 {
+            color: #333;
+            font-size: 26px;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .input-group i {
+            color: #6a5bff;
+            margin-right: 10px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+            box-sizing: border-box;
+            background-color: transparent;
+            outline: none;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #6a5bff;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 120px;
+        }
+
+        button {
+            padding: 12px;
+            background-color: #6a5bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #4e4a94;
+            transform: translateY(-2px);
+        }
+
+        .success-message {
+            color: #4caf50;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        input:focus, textarea:focus {
+            border: 2px solid #6a5bff;
+        }
+
+        .flash-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .flash-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2><i class="fas fa-file-upload"></i> Ajouter un Document</h2>
+
+        <!-- Affichage des messages flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul>
+                    {% for category, message in messages %}
+                        <li class="flash-message {% if category == 'error' %}flash-error{% endif %}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <form action="/ajouter_document" method="POST" enctype="multipart/form-data">
+            <!-- Champ pour le type du document -->
+            <div class="input-group">
+                <i class="fas fa-file-alt"></i>
+                <input type="text" id="document-type" name="document-type" placeholder="Entrez le type du document" required>
+            </div>
+
+            <!-- Champ pour le titre du document -->
+            <div class="input-group">
+                <i class="fas fa-heading"></i>
+                <input type="text" id="document-title" name="document-title" placeholder="Entrez le titre du document" required>
+            </div>
+
+            <!-- Champ pour le fichier du document -->
+            <div class="input-group">
+                <i class="fas fa-upload"></i>
+                <input type="file" id="document-file" name="document-file" required>
+            </div>
+
+            <button type="submit">Ajouter le Document</button>
+        </form>
+
+        <div id="successMessage" class="success-message" style="display: none;">
+            <i class="fas fa-check-circle"></i> Document ajouté avec succès !
+        </div>
+        
+    </div>
+
+    <script>
+        // Fonction pour traiter le formulaire et afficher un message de succès
+        document.querySelector("form").addEventListener("submit", function(event) {
+            event.preventDefault(); // Empêche l'envoi normal du formulaire
+
+            var formData = new FormData(this);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/ajouter_document", true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    document.getElementById("successMessage").style.display = "block";
+                    setTimeout(function() {
+                        document.getElementById("successMessage").style.display = "none";
+                    }, 3000);
+                } else {
+                    alert("Erreur lors de l'ajout du document. Veuillez réessayer.");
+                }
+            };
+
+            xhr.send(formData);
+        });
+    </script>
+
+</body>
+</html>

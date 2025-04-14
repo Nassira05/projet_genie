@@ -1,0 +1,21 @@
+# Core Flask
+Flask==3.1.0
+Werkzeug==3.1.3
+Jinja2==3.1.6
+MarkupSafe==3.0.2
+itsdangerous==2.2.0
+click==8.1.8
+blinker==1.9.0
+
+# Database
+Flask-SQLAlchemy==3.1.1
+PyMySQL==1.1.0  # Alternative à mysql-connector-python (plus léger)
+SQLAlchemy==2.0.23
+
+# Utilitaires
+python-dotenv==1.0.0
+python-dateutil==2.8.2
+email-validator==2.0.0.post2
+
+# Uploads/files
+secure-filename==1.1.1  # Pour werkzeug.utils.secure_filename

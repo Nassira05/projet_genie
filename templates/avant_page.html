@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenue - StartUni</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/avant_page.css') }}">
+</head>
+<body>
+
+<header class="animate__animated animate__fadeInDown">
+    <h1>Bienvenue sur <span class="highlight">StartUni</span></h1>
+    <div class="wave"></div>
+</header>
+
+<div class="hero">
+    <div class="left animate__animated animate__fadeInLeft">
+        <h2>Votre guide pour une <span class="highlight">réussite universitaire</span></h2>
+        <p>
+            StartUni est là pour vous aider à vous intégrer sur le campus. Explorez les lieux essentiels, 
+            accédez aux ressources académiques et administratives, et recevez des conseils pour une transition 
+            réussie vers la vie universitaire. Avec StartUni, soyez prêt à exceller !
+        </p>
+        <a href="{{ url_for('connexion_011737') }}" class="button pulse">Accédez à StartUni</a>
+    </div>
+    <div class="right animate__animated animate__fadeInRight">
+        <img src="{{ url_for('static', filename='Images/brand guidelines-rafiki.png') }}" alt="Illustration de StartUni" class="floating">
+    </div>
+</div>
+
+</body>
+</html>

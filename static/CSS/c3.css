@@ -1,0 +1,325 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Poppins, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    overflow-x: hidden; /* Empêche le défilement horizontal */
+    width: 100%;
+  }
+ 
+  
+  /* Change la couleur de la barre de défilement */
+::-webkit-scrollbar {
+    width: 12px; /* Largeur de la barre de défilement */
+}
+
+/* Change la couleur de la "cicatrice" de la barre de défilement */
+::-webkit-scrollbar-thumb {
+    background-color: #4CAF50; /* Couleur du curseur de la barre de défilement */
+    border-radius: 6px; /* Bords arrondis pour un effet plus esthétique */
+}
+
+/* Change la couleur de la barre de défilement quand elle est survolée */
+::-webkit-scrollbar-thumb:hover {
+    background-color: #45a049; /* Couleur lorsque l'on survole la barre */
+}
+
+/* Change la couleur de la partie vide de la barre de défilement */
+::-webkit-scrollbar-track {
+    background-color: #f1f1f1; /* Couleur de fond de la barre de défilement */
+    border-radius: 6px; /* Bords arrondis pour le fond */
+}
+  .logo a {
+    text-decoration: none;
+    color: #333;
+    font-family: 'Poppins', sans-serif;
+    font-size: 36px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    background: linear-gradient(45deg, #6a11cb, #2575fc);
+    
+    color: transparent;
+    -webkit-background-clip: text;
+    padding: 5px 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  header {
+    position: relative;
+    height: 65vh;
+    background: url('../Images/plane.png') no-repeat center center/cover;
+
+    background-attachment: fixed; /* Rend l'image de fond fixe lors du défilement */
+    background-position: center;
+    background-size: cover;
+    
+
+  }
+  
+  header:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1;
+  }
+  
+  .hero {
+    position: relative;
+    z-index: 1;
+    color: white;
+    text-align: center;
+    padding: 150px 20px 50px;
+  }
+  
+  .hero h1 {
+    font-size: 4rem;
+    margin-top: -20px;
+  }
+  .hero p {
+    font-size: 1.4rem; /* Taille réduite pour le paragraphe */
+    margin-bottom: 15px; /* Espacement réduit entre le paragraphe et la barre de recherche */
+    margin-left: 70px;
+    color: #fff;
+}
+  nav {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+  }
+  
+  nav .logo a {
+    font-size: 1.8rem;
+    color: white;
+    font-weight: bolder;
+  }
+  
+  nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+  }
+  
+  
+  .menu {
+    list-style: none;
+    display: flex;
+    gap: 13px;
+  }
+  
+  .menu li a {
+    color: white;
+    font-size: 1rem;
+    padding: 10px;
+    font-weight: bolder;
+  }
+  
+ 
+  
+  .dropdown {
+    position: relative;
+  }
+  /* Styles de base */
+nav ul li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    padding-bottom: 5px;
+    position: relative;
+}
+
+/* Ajouter un effet de soulignement personnalisé */
+nav ul li a::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #ff8c00; /* Couleur du soulignement */
+    transition: width 0.3s ease;
+}
+
+/* Lors du survol, le soulignement apparaît */
+nav ul li a:hover::after {
+    width: 100%; /* Le soulignement s'étend sous le lien */
+}
+
+/* Styles pour le menu déroulant */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 160%;
+    left: 0;
+    background-color: white;
+    border-left-width: 1px;
+    border-left-style: solid;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    padding: 10px 0;
+    width: 180px;
+    border-radius: 10px;
+}
+
+/* Pas de soulignement pour le contenu du dropdown */
+.dropdown-menu li a {
+    display: block;
+    padding: 10px 20px;
+    color: #002C4C;
+    font-size: 0.9rem;
+    text-align: left;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Effet de survol pour le contenu du dropdown */
+.dropdown-menu li a:hover {
+    background-color: #f4f4f4;
+    color: #ff8c00;
+}
+
+  
+  .dropdown:hover .dropdown-menu {
+    display: block;
+  }
+
+/* Chatbot Container */
+.chatbot-container {
+    position: fixed;
+    bottom: 30px;
+    right: 16px;
+    z-index: 1000;
+    text-align: center; /* Aligne les éléments au centre */
+}
+
+
+
+/* Chatbot Button */
+.chatbot-button {
+    background-color: #ff8c00;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 1.8rem;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Chatbot Window */
+.chatbot-window {
+    display: none;
+    position: absolute;
+    bottom: 60px;
+    right: 0;
+    width: 300px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    font-size: 1rem;
+}
+
+/* Chatbot Header */
+.chatbot-header {
+    display: flex;
+    justify-content: space-between;
+    background-color: #002C4C;
+    color: white;
+    padding: 10px;
+    border-radius: 8px 8px 0 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .chatbot-window {
+        width: 90%; /* Ajuste la taille pour les écrans plus petits */
+    }
+
+ 
+
+    .chatbot-button {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem; /* Réduit la taille du bouton */
+    }
+}
+
+.footer {
+    background-color: #2c3e50; /* Couleur sombre pour un style moderne */
+    color: #ffffff; /* Texte en blanc pour un bon contraste */
+    text-align: center;
+    padding: 20px;
+    font-size: 0.9rem;
+    border-top: 3px solid #ff8c00; /* Ligne décorative */
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-content p {
+    margin: 0;
+    flex: 1;
+}
+
+.footer-links {
+    display: flex;
+    gap: 10px;
+}
+
+.footer-links a {
+    color: #ff8c00; /* Couleur vive pour les liens */
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-weight: bold;
+}
+
+.footer-links a:hover {
+    color: #f39c12; /* Couleur plus claire au survol */
+}
+
+.footer-links span {
+    color: #ffffff; /* Séparateur entre les liens */
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-links {
+        justify-content: center;
+    }
+}

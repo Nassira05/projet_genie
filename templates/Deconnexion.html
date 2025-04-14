@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Déconnexion - Assistant Virtuel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 40px 60px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .container h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .container p {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background-color: #ff6f61;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #e65a52;
+        }
+
+        .btn-cancel {
+            padding: 12px 25px;
+            background-color: #bbb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background-color: #999;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Vous êtes sur le point de vous déconnecter</h1>
+        <p>Êtes-vous sûr de vouloir vous déconnecter de l'Assistant Virtuel ?</p>
+        <div>
+            <a href="{{ url_for('connexion_011737') }}"><button class="btn">Oui, se déconnecter</button></a>
+            <a href="{{ url_for('ADMIN') }}"><button class="btn-cancel">Annuler</button></a>
+        </div>
+    </div>
+    <script>
+        setTimeout(function() {
+            window.location.href = 'connexion_011737.html'; // Redirige vers la page de connexion après 3 secondes
+        }, 3000);
+    </script>
+    
+
+</body>
+</html>

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistance Virtuelle - Nouveaux Bacheliers</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/pagee.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+     .notification-badge {
+        display: inline-block;
+        background-color: #e74c3c;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        text-align: center;
+        line-height: 20px;
+        font-size: 12px;
+        margin-left: 5px;
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    
+    .dmoney, .bourses, .medical {
+        position: relative;
+        margin-left: 5%;
+        width: 90%;
+        max-width: 950px;
+        margin-top: 20px;
+    }
+    
+    .dmoney li, .bourses li, .medical li {
+        margin-left: 7%;
+        color: #800000;
+    }
+
+    .dmoney h1, .bourses h1, .medical h1 {
+        margin-left: 5%;
+        color: #ff8c00;
+    }
+    
+    .dmoney p, .bourses p, .medical p {
+        margin-left: 5%;
+        width: 90%;
+        max-width: 950px;
+        margin-top: 20px;
+    }
+    
+    .dmoney img, .bourses img, .medical img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 20px auto;
+    }
+
+    /* Mobile Menu Styles */
+    .menu-toggle {
+        display: none;
+        cursor: pointer;
+        color: white;
+        font-size: 1.8rem;
+        padding: 10px;
+        z-index: 1000;
+    }
+
+    @media (max-width: 768px) {
+        .menu-toggle {
+            display: block;
+        }
+        
+        .menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 300px;
+            height: 100vh;
+            background-color: #2c3e50;
+            flex-direction: column;
+            align-items: flex-start;
+            padding-top: 80px;
+            transition: right 0.3s ease;
+            z-index: 999;
+        }
+        
+        .menu.active {
+            right: 0;
+        }
+        
+        .menu li {
+            width: 100%;
+            padding: 10px 20px;
+        }
+        
+        .dropdown-menu {
+            position: static;
+            display: none;
+            width: 100%;
+            box-shadow: none;
+            background-color: rgba(0,0,0,0.1);
+        }
+        
+        .dropdown:hover .dropdown-menu {
+            display: none;
+        }
+        
+        .dropdown.active .dropdown-menu {
+            display: block;
+        }
+        
+        /* Adjust content for mobile */
+        .dmoney, .bourses, .medical {
+            margin-left: 5%;
+            width: 90%;
+        }
+        
+        .dmoney p, .bourses p, .medical p {
+            width: 95%;
+        }
+        
+        .hero h1 {
+            font-size: 2rem;
+        }
+        
+        .hero p {
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero h1 {
+            font-size: 1.8rem;
+        }
+        
+        .hero p {
+            font-size: 0.9rem;
+        }
+        
+        .dmoney h1, .bourses h1, .medical h1 {
+            font-size: 1.5rem;
+        }
+        
+        .dmoney li, .bourses li, .medical li {
+            margin-left: 5%;
+        }
+    }
+  </style>  
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="#"> StartUni</a>
+            </div>
+            <div class="menu-toggle" id="mobile-menu">
+                <i class='bx bx-menu'></i>
+            </div>
+            <ul class="menu" id="main-menu">
+                <li><a href="{{ url_for('page_acceuil') }}">Accueil</a></li>
+                <li><a href="#">Orientation</a></li>
+                <li class="dropdown">
+                    <a href="#">Support Administratif</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('renseignement') }}">Renseignement sur les filières</a></li>
+                        <li><a href="{{ url_for('page_inscription') }}">Étapes de l'inscription</a></li>
+                        <li><a href="{{ url_for('aide') }}">Accès aux aides</a></li>
+                        <li><a href="{{ url_for('gestion') }}">Gestion Documents administratifs</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="{{ url_for('pla') }}">Planning 
+                        {% if events_count > 0 %}
+                        <span class="notification-badge">{{ events_count }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li class="dropdown">
+                    <a href="{{ url_for('guide_academique') }}">Guide Académique</a>
+                </li>
+                <li><a href="{{ url_for('faq') }}">FAQ</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="hero">
+            <h1>Aides proposées par l'université</h1>
+            <p>Retrouvez toutes les informations pour beneficier des aides proposées par l'université.</p>
+        </div>
+    </header>
+
+    <div class="dmoney"> 
+        <h1> Aides financier pour les étudiants </h1>
+        <p>les étudiants venant de régions bénéficient d'une aide de 8000 FDJ par semaines,versée sur leur compte dmoney.
+            Cette aide est destinée a couvrir les frais de restaurant universitaire,logement,transport et d'autres besoins quotidiens.
+            l'université verse cette somme pour vous soutenir dans vos études et vous permettre de vous concentrer sur vos objectif académiques.</p>
+            <p> <strong> Role: Permet au etudiant en situation financier difficile de les venir en aide.</strong></p>
+            <p> <strong>  <ol> <li> Montant: 8000 fdj par personne et par semaine.</li>
+                <li> Conserne les Etudiant venant des regions.</li>
+                <li> Utilisation: Frais de restaurant universitaire, transport et autres besoins quotidiens.</li>
+              </ol> </strong>
+             </p>
+        <img class="i4" src="{{ url_for('static', filename='Images/n.png') }}">
+    </div>
+
+    <div class="bourses"> 
+        <h1> Aides bourse d'etude pour les étudiants</h1>
+        <p> L'université met en place un programme de bourse d'excellence destiné à récompenser les meilleurs étudiants de chaque filière. Cette initiative vise à encourager l'excellence académique et à soutenir les étudiants méritants dans la poursuite de leurs études. Cette bourse permet aux lauréats de poursuivre leurs études dans l'université de leur choix, en leur offrant un accompagnement financier conséquent.</p>
+            <p> <strong> Role: Permet au etudiants de leur recompenser pour leur effort.</strong></p>
+            <p> <strong>  <ol> <li>Conditions: Etre parmis les 5 premier de votre promotion .</li>
+                <li> Conserne les Etudiant venant des regions.</li>
+                <li>  Avantages: L'étudiant est libre de choisir l'université de son choix peut importe le pays ,le prix ou la specialité</li>
+                </ol> </strong>
+           </p>
+        <img class="i5" src="{{ url_for('static', filename='Images/pica.png') }}">
+    </div>
+
+    <div class="medical"> 
+        <h1> Aides medical pour les étudiants </h1>
+        <p>Dans le cadre de son engagement envers le bien-être et la santé de ses étudiants, l'université met en place un programme d'aide médicale garantissant à tous les étudiants inscrits une couverture médicale gratuite. Cette aide se traduit par l'attribution d'une Carte Nationale de Sécurité Sociale (CNSS), permettant aux étudiants d'accéder sans frais aux soins médicaux dans l'ensemble des hôpitaux du pays.
+
+            Grâce à cette initiative, chaque étudiant bénéficie d'un accès équitable aux services de santé, favorisant ainsi un environnement académique serein et propice à la réussite.</p>
+            <p> <strong> Role: Permet au etudiant en situation financier difficile de les venir en aide. </strong> </p>
+            <p> <strong>  <ol>
+                 <li>conditions: Avoir une carte CNSS Etudiant </li>
+                <li> avantages:Prise en charge des consultations, traitements et hospitalisations selon les conditions établies par la CNSS.</li>
+                <li>  Avantages:Accès aux soins médicaux gratuits dans tous les hôpitaux du pays.</li>
+             </ol> </strong>
+             </p>
+        <img class="i8" src="{{ url_for('static', filename='Images/me.jpg') }}">
+    </div>
+
+    <div class="chatbot-container">
+        <a href="{{ url_for('chatbox') }}">
+            <button class="chatbot-button" onclick="openChatbot()">💬</button>
+        </a>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2025 Assistance Virtuelle - Tous droits réservés</p>
+            <div class="footer-links">
+                <a href="#">Contactez-nous</a> 
+                <span>|</span> 
+                <a href="#">Mentions légales</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Menu mobile toggle
+        document.getElementById('mobile-menu').addEventListener('click', function() {
+            document.getElementById('main-menu').classList.toggle('active');
+        });
+
+        // Dropdown functionality for mobile
+        const dropdowns = document.querySelectorAll('.dropdown');
+        dropdowns.forEach(dropdown => {
+            dropdown.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    this.classList.toggle('active');
+                }
+            });
+        });
+
+        // Close menu when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                const menu = document.getElementById('main-menu');
+                const mobileMenuBtn = document.getElementById('mobile-menu');
+                if (!menu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                    menu.classList.remove('active');
+                    dropdowns.forEach(dropdown => {
+                        dropdown.classList.remove('active');
+                    });
+                }
+            }
+        });
+
+        function openChatbot() {
+            document.getElementById('chatbot').style.display = 'block';
+        }
+
+        function closeChatbot() {
+            document.getElementById('chatbot').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

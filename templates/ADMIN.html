@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Assistant Virtuel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Réinitialisation du style de base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Corps de la page */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            height: 100vh;
+        }
+        .admin-profile-img {
+            width: 500px;  /* Ajustez cette valeur selon la taille souhaitée */
+            height: 100px; /* Vous pouvez aussi ajuster la hauteur si nécessaire */
+            border-radius: 50%; /* Garde l'image ronde */
+            border: 3px solid #fff;  /* Ajoute une bordure blanche */
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(135deg, #6a5bff, #4e4a94);
+            color: white;
+            position: fixed;
+            height: 100%;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .admin-info {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .admin-info img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            border: 3px solid #fff;
+        }
+
+        .admin-info p {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .sidebar ul li {
+            width: 100%;
+            padding: 15px;
+            text-align: left;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+        }
+
+        .sidebar ul li:hover {
+            background: #5d53cb;
+            cursor: pointer;
+            transform: scale(1.05);
+        }
+
+        /* Contenu principal */
+        .main-content {
+            margin-left: 260px;
+            padding: 10px;
+            width: calc(100% - 260px);
+            background-color: #f4f7fa;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+
+
+        .dashboard-header h1 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .dashboard-header button {
+            padding: 10px 20px;
+            background-color: #6a5bff;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .dashboard-header button:hover {
+            background-color: #4639d9;
+        }
+
+        .section {
+            background: white;
+            padding: 22px;
+            margin-top: 30px;
+            border-radius: 13px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        /* Applique cette règle pour ne pas avoir de soulignement sur les liens */
+        a {
+            text-decoration: none;
+            color: inherit; /* L'héritage de la couleur du texte, si vous voulez garder la couleur du texte intacte */
+        }
+
+        /* Optionnel: style au survol pour les liens */
+        a:hover {
+            color: #6280e4; /* Vous pouvez changer cette couleur */
+            text-decoration: none; /* Assurez-vous que l'effet de soulignement n'apparaît pas au survol */
+        }
+
+        .section h2 {
+            color: #333;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        /* Pied de page */
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #6a5bff, #4e4a94);
+            color: white;
+            border-radius: 10px;
+            margin-top: 90px;
+        }
+
+        /* Animation pour les sections */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+      
+
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="admin-info">
+            <img src="{{ url_for('static', filename='image/vhh.jpg') }}" alt="Admin Profile">
+
+            <p><strong>Admin</strong></p>
+        </div>
+        <ul>
+            <li><a href="{{ url_for('admin') }}"><i class="fas fa-home"></i> Tableau de bord</a></li>
+            <li><a href="{{ url_for('user') }}"><i class="fas fa-users"></i> Gérer les utilisateurs</a></li>
+            <li><a href="{{ url_for('lieux') }}"><i class="fas fa-map-marker-alt"></i> Gérer les lieux</a></li>
+
+            <li><a href="{{ url_for('docs') }}"><i class="fas fa-file"></i> Gérer les documents</a></li>
+            <li><a href="{{ url_for('deconnexion') }}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="dashboard-header">
+            <h1>Tableau de bord - Admin</h1>
+            <a href="{{ url_for('deconnexion') }}"><button>Déconnexion</button></a>
+        </div>
+
+        <a href="{{ url_for('user') }}"><div class="section">
+            <h2>Gérer les utilisateurs</h2>
+            <p>Voir les étudiants inscrits, Bloquez, débloquez ou supprimez des comptes utilisateurs.</p>
+        </div></a>
+        
+
+        <a href="{{ url_for('lieux') }}"><div class="section">
+            <h2>Gérer les lieux</h2>
+            <p>Ajoutez, modifiez ou supprimez des bâtiments et des lieux.</p>
+        </div>
+        </a>
+
+        <a href="{{ url_for('docs') }}"><div class="section">
+            <h2>Gérer les documents</h2>
+            <p>Ajoutez, modifiez ou supprimez des documents administratifs.</p>
+        </div>
+        </a>
+
+        <div class="footer">
+            &copy; 2025 Assistant Virtuel - Tous droits réservés.
+        </div>
+    </div>
+
+</body>
+</html>

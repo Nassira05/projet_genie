@@ -34,7 +34,7 @@
     background-color: #f1f1f1; /* Couleur de fond de la barre de défilement */
     border-radius: 6px; /* Bords arrondis pour le fond */
 }
-  .logo a {
+.logo a {
     text-decoration: none;
     color: #333;
     font-family: 'Poppins', sans-serif;

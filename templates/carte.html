@@ -1,0 +1,3432 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Plan des Itinéraires - Université de Djibouti</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+}
+
+/* Nouveau header */
+.header-section {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    padding: 0 px;
+}
+
+.header-title {
+    flex: 1;
+    text-align: center;
+    font-size: 1.5em;
+    color: #2c3e50;
+    font-weight: bold;
+}
+
+.back-button {
+    font-size: 1.8em;
+    color: #2c3e50;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.back-button:hover {
+    background-color: #f0f0f0;
+}
+
+/* Styles existants avec ajustements */
+#map {
+    height: calc(100vh - 60px);
+    width: 100%;
+    margin-top: 60px;
+}
+
+#control-panel {
+    position: absolute;
+    top: 80px;
+    left: 20px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    width: 280px;
+}
+
+#legend {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    width: 200px;
+    
+    
+}
+
+h3 {
+    color: #2c3e50;
+    margin-top: 0;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 8px;
+}
+
+select, button {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+button.secondary {
+    background-color: #95a5a6;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    font-size: 13px;
+}
+
+.legend-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    display: inline-block;
+    text-align: center;
+}
+
+.route-instructions {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    width: 250px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.instruction-step {
+    margin: 5px 0;
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+}
+
+.instruction-icon {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+    color: #3498db;
+}
+
+.instruction-text {
+    flex: 1;
+}
+
+.instruction-distance {
+    font-size: 0.8em;
+    color: #7f8c8d;
+    margin-top: 3px;
+}
+
+.leaflet-routing-container {
+    display: none;
+}
+
+.custom-icon {
+    background: white;
+    border-radius: 50%;
+    padding: 5px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+.entree-icon {
+    background: #2ecc71;
+    color: white;
+    border-radius: 50%;
+    padding: 5px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+/* Contrôles de zoom */
+.leaflet-top.leaflet-left {
+    top: 500px;
+    left: 80px;
+    right: auto;
+}
+
+.leaflet-control-zoom {
+    border: 2px solid rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.leaflet-control-zoom a {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 18px;
+    color: #333;
+    background-color: rgba(35, 19, 252, 0.9);
+}
+
+.leaflet-control-zoom a:hover {
+    background-color: #f8f9fa;
+}
+    </style>
+</head>
+<body>
+    <div class="header-section">
+        <div class="back-button" id="backButton">
+            <i class="fas fa-arrow-left"></i>
+        </div>
+        <div class="header-title">Orientation Universitaire</div>
+    </div>
+   
+    <div id="control-panel">
+        <h3><i class="fas fa-map-marked-alt"></i> Itinéraires Universitaires</h3>
+        <label><i class="fas fa-map-marker-alt"></i> Départ :</label>
+        <select id="depart">
+            <option value="">Choisissez un lieu de départ</option>
+        </select>
+        <label><i class="fas fa-flag-checkered"></i> Arrivée :</label>
+        <select id="arrivee">
+            <option value="">Choisissez une destination</option>
+        </select>
+        <button id="calculer"><i class="fas fa-route"></i> Calculer l'itinéraire</button>
+        <button id="effacer" class="secondary"><i class="fas fa-trash-alt"></i> Effacer</button>
+    </div>
+
+    <div id="legend">
+        <h4><i class="fas fa-key"></i> Légende</h4>
+        <div class="legend-item"><span class="legend-icon"><i class="fas fa-door-open" style="color: #2ecc71;"></i></span> Entrée principale</div>
+        <div class="legend-item"><span class="legend-icon"><i class="fas fa-university" style="color: #2c3e50;"></i></span> Campus</div>
+        <div class="legend-item"><span class="legend-icon"><i class="fas fa-graduation-cap" style="color: #e74c3c;"></i></span> Facultés</div>
+        <div class="legend-item"><span class="legend-icon"><i class="fas fa-chalkboard-teacher" style="color: #f39c12;"></i></span> Amphithéâtres</div>
+        <div class="legend-item"><span class="legend-icon"><i class="fas fa-book" style="color: #9b59b6;"></i></span> Bibliothèque</div>
+        <div class="legend-item"><span class="legend-icon"><i class="fas fa-landmark" style="color: #ff5733;"></i></span> Tour Eiffel</div>
+        <div class="legend-item"><span class="legend-icon"><i class="fas fa-utensils" style="color: #8e44ad;"></i></span> Restaurant</div>
+        <div class="legend-item"><span class="legend-icon"><i class="fas fa-mosque" style="color: #27ae60;"></i></span> Mosquée</div>
+    </div>
+
+    <div id="instructions-panel" class="route-instructions" style="display: none;">
+        <h4><i class="fas fa-directions"></i> Instructions d'itinéraire</h4>
+        <div id="instructions-list"></div>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    
+    <script>
+        // Initialisation de la carte centrée sur le campus principal
+        var map = L.map('map').setView([11.538603659322145, 43.116434812545776], 18);
+        
+        // Couche satellite avec noms
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            maxZoom: 20,
+            minZoom: 15
+        }).addTo(map);
+
+        // Fonction pour créer des icônes personnalisées
+        function creerIconePersonnalisee(icone, couleur, estEntree = false) {
+            return L.divIcon({
+                html: `<div class="${estEntree ? 'entree-icon' : 'custom-icon'}"><i class="fas ${icone}" style="font-size: 16px; color: ${estEntree ? 'white' : couleur};"></i></div>`,
+                iconSize: [30, 30],
+                className: 'icone-personnalisee'
+            });
+        }
+
+        // Tous les lieux avec leurs coordonnées précises
+        var lieux = {
+            "Entrée principale (Porte de l'Université)": {
+                coords: [11.5388, 43.1164],
+                icone: creerIconePersonnalisee("fa-door-open", "#2ecc71", true),
+                type: "entree"
+            },
+            "Université de Djibouti (Campus de Balbala)": {
+                coords: [11.5388, 43.1164],
+                icone: creerIconePersonnalisee("fa-university", "#2c3e50"),
+                type: "campus"
+            },
+            "Restaurant Universitaire de Djibouti": {
+                coords: [11.537402233918641, 43.115558530733125],
+                icone: creerIconePersonnalisee("fa-utensils", "#8e44ad"),
+                type: "restaurant"
+            },
+            "Université de Djibouti Site 2": {
+                coords: [11.59384, 43.15099],
+                icone: creerIconePersonnalisee("fa-university", "#2c3e50"),
+                type: "campus"
+            },
+            "Université de Djibouti Site 3": {
+                coords: [11.592101, 43.151593],
+                icone: creerIconePersonnalisee("fa-university", "#2c3e50"),
+                type: "campus"
+            },
+            "Bibliothèque Universitaire": {
+                coords: [11.5387, 43.11673],
+                icone: creerIconePersonnalisee("fa-book", "#9b59b6"),
+                type: "bibliotheque"
+            },
+            "Tour Eiffel": {
+                coords: [11.538036, 43.117062],
+                icone: creerIconePersonnalisee("fa-landmark", "#ff5733"),
+                type: "monument"
+            },
+            "Faculté de Fdeg": {
+                coords: [11.5384, 43.11772],
+                icone: creerIconePersonnalisee("fa-graduation-cap", "#e74c3c"),
+                type: "faculte"
+            },
+            "Faculté de FLLSH": {
+                coords: [11.5377, 43.11775],
+                icone: creerIconePersonnalisee("fa-graduation-cap", "#e74c3c"),
+                type: "faculte"
+            },
+            "Amphithéâtre Fdeg": {
+                coords: [11.53849, 43.11822],
+                icone: creerIconePersonnalisee("fa-chalkboard-teacher", "#f39c12"),
+                type: "amphi"
+            },
+            "Amphithéâtre FLLSH": {
+                coords: [11.53775, 43.11827],
+                icone: creerIconePersonnalisee("fa-chalkboard-teacher", "#f39c12"),
+                type: "amphi"
+            },
+            "Faculté FS": {
+                coords: [11.538346, 43.116338],
+                icone: creerIconePersonnalisee("fa-graduation-cap", "#e74c3c"),
+                type: "faculte"
+            },
+            "Faculté d'ingénierie": {
+                coords: [11.539591128164389, 43.12039788128989],
+                icone: creerIconePersonnalisee("fa-graduation-cap", "#e74c3c"),
+                type: "faculte"
+            },
+            "Amphithéâtre FS": {
+                coords: [11.538446, 43.115839],
+                icone: creerIconePersonnalisee("fa-chalkboard-teacher", "#f39c12"),
+                type: "amphi"
+            },
+            "Mosquée du Campus": {
+                coords: [11.53895, 43.11813],
+                icone: creerIconePersonnalisee("fa-mosque", "#27ae60"),
+                type: "mosquee"
+            },
+            "Services Administratifs": {
+                coords: [11.5387, 43.1173],
+                icone: creerIconePersonnalisee("fa-briefcase", "#3498db"),
+                type: "admin"
+            }
+        };
+
+        // Ajout des marqueurs sur la carte et remplissage des menus
+        Object.keys(lieux).forEach(function(lieu) {
+            var marker = L.marker(lieux[lieu].coords, { 
+                icon: lieux[lieu].icone,
+                riseOnHover: true
+            }).addTo(map);
+            
+            marker.bindPopup(`<b>${lieu}</b>`);
+            
+            // Ajout aux menus déroulants
+            var option = `<option value="${lieu}">${lieu}</option>`;
+            document.getElementById('depart').innerHTML += option;
+            document.getElementById('arrivee').innerHTML += option;
+        });
+
+        // Gestion de l'itinéraire
+        var controleItineraire;
+        var customRoute;
+        var instructionsPanel = document.getElementById('instructions-panel');
+        var instructionsList = document.getElementById('instructions-list');
+
+        document.getElementById('calculer').addEventListener('click', function() {
+            var depart = document.getElementById('depart').value;
+            var arrivee = document.getElementById('arrivee').value;
+            
+            if (!depart || !arrivee) {
+                alert("Veuillez sélectionner un lieu de départ et une destination");
+                return;
+            }
+            
+            if (depart === arrivee) {
+                alert("Le lieu de départ et la destination doivent être différents");
+                return;
+            }
+            
+            // Suppression des anciens itinéraires
+            if (controleItineraire) {
+                map.removeControl(controleItineraire);
+            }
+            if (customRoute) {
+                map.removeLayer(customRoute);
+            }
+            instructionsPanel.style.display = 'none';
+            instructionsList.innerHTML = '';
+            
+            // ITINÉRAIRE PERSONNALISÉ 1: Bibliothèque → Faculté FLLSH (sans arbres)
+            if (depart === "Bibliothèque Universitaire" && arrivee === "Faculté de FLLSH") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5385, 43.1168],
+                    [11.5380, 43.1170], // Passe près de la Tour Eiffel
+                    [11.5378, 43.1172],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-arrow-up', text: "Sortez de la bibliothèque"},
+                    {icon: 'fa-arrow-left', text: "Prenez à gauche vers l'allée principale"},
+                    {icon: 'fa-landmark', text: "Passez près de la Tour Eiffel (sur votre droite)"},
+                    {icon: 'fa-arrow-down', text: "Continuez tout droit (environ 60 mètres)"},
+                    {icon: 'fa-university', text: "La Faculté FLLSH est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 2: Faculté Fdeg → Faculté FS
+            else if (depart === "Faculté de Fdeg" && arrivee === "Faculté FS") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5384, 43.1175],
+                    [11.5384, 43.1170],
+                    [11.5384, 43.1165],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de la Faculté Fdeg"},
+                    {icon: 'fa-arrow-down', text: "Prenez l'allée principale devant vous"},
+                    {icon: 'fa-arrow-down', text: "Continuez tout droit (environ 100 mètres)"},
+                    {icon: 'fa-university', text: "La Faculté FS est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 3: Amphithéâtre FLLSH → Amphithéâtre FS
+            else if (depart === "Amphithéâtre FLLSH" && arrivee === "Amphithéâtre FS") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5378, 43.1180],
+                    [11.5380, 43.1175], // Passe près de la Tour Eiffel
+                    [11.5382, 43.1170],
+                    [11.5384, 43.1165],
+                    lieux["Faculté FS"].coords,
+                    [11.5384, 43.1160],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de l'Amphithéâtre FLLSH"},
+                    {icon: 'fa-arrow-right', text: "Prenez à droite vers l'allée centrale"},
+                    {icon: 'fa-landmark', text: "Passez près de la Tour Eiffel (sur votre gauche)"},
+                    {icon: 'fa-arrow-down', text: "Continuez tout droit (environ 80 mètres)"},
+                    {icon: 'fa-university', text: "Entrez dans la Faculté FS"},
+                    {icon: 'fa-arrow-down', text: "Avancez dans le couloir principal"},
+                    {icon: 'fa-cube', text: "L'Amphithéâtre FS est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 4: Amphithéâtre FS → Amphithéâtre FLLSH (inverse du précédent)
+            else if (depart === "Amphithéâtre FS" && arrivee === "Amphithéâtre FLLSH") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5384, 43.1160],
+                    lieux["Faculté FS"].coords,
+                    [11.5384, 43.1165],
+                    [11.5382, 43.1170],
+                    [11.5380, 43.1175], // Passe près de la Tour Eiffel
+                    [11.5378, 43.1180],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de l'Amphithéâtre FS"},
+                    {icon: 'fa-arrow-up', text: "Remontez le couloir principal"},
+                    {icon: 'fa-university', text: "Sortez de la Faculté FS"},
+                    {icon: 'fa-arrow-up', text: "Prenez l'allée principale devant vous"},
+                    {icon: 'fa-landmark', text: "Passez près de la Tour Eiffel (sur votre droite)"},
+                    {icon: 'fa-arrow-left', text: "Continuez tout droit vers l'allée centrale"},
+                    {icon: 'fa-cube', text: "L'Amphithéâtre FLLSH est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 5: Amphithéâtre Fdeg → Amphithéâtre FS
+            else if (depart === "Amphithéâtre Fdeg" && arrivee === "Amphithéâtre FS") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5385, 43.1180],
+                    [11.5385, 43.1175],
+                    lieux["Faculté de Fdeg"].coords,
+                    [11.5384, 43.1170],
+                    [11.5384, 43.1165],
+                    lieux["Faculté FS"].coords,
+                    [11.5384, 43.1160],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de l'Amphithéâtre Fdeg"},
+                    {icon: 'fa-arrow-down', text: "Descendez vers la sortie de la faculté"},
+                    {icon: 'fa-university', text: "Sortez de la Faculté Fdeg"},
+                    {icon: 'fa-arrow-down', text: "Prenez l'allée principale devant vous"},
+                    {icon: 'fa-arrow-down', text: "Continuez tout droit (environ 100 mètres)"},
+                    {icon: 'fa-university', text: "Entrez dans la Faculté FS"},
+                    {icon: 'fa-arrow-down', text: "Avancez dans le couloir principal"},
+                    {icon: 'fa-cube', text: "L'Amphithéâtre FS est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 6: Amphithéâtre FS → Amphithéâtre Fdeg (inverse du précédent)
+            else if (depart === "Amphithéâtre FS" && arrivee === "Amphithéâtre Fdeg") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5384, 43.1160],
+                    lieux["Faculté FS"].coords,
+                    [11.5384, 43.1165],
+                    [11.5384, 43.1170],
+                    lieux["Faculté de Fdeg"].coords,
+                    [11.5385, 43.1175],
+                    [11.5385, 43.1180],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de l'Amphithéâtre FS"},
+                    {icon: 'fa-arrow-up', text: "Remontez le couloir principal"},
+                    {icon: 'fa-university', text: "Sortez de la Faculté FS"},
+                    {icon: 'fa-arrow-up', text: "Prenez l'allée principale devant vous"},
+                    {icon: 'fa-arrow-up', text: "Continuez tout droit (environ 100 mètres)"},
+                    {icon: 'fa-university', text: "Entrez dans la Faculté Fdeg"},
+                    {icon: 'fa-arrow-up', text: "Avancez dans le couloir principal"},
+                    {icon: 'fa-cube', text: "L'Amphithéâtre Fdeg est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 7: Amphithéâtre FS → Restaurant
+            else if (depart === "Amphithéâtre FS" && arrivee === "Restaurant Universitaire de Djibouti") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5384, 43.1160],
+                    lieux["Faculté FS"].coords,
+                    [11.5384, 43.1165],
+                    [11.5382, 43.1163],
+                    [11.5378, 43.1160],
+                    [11.5376, 43.1158],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de l'Amphithéâtre FS"},
+                    {icon: 'fa-arrow-up', text: "Remontez le couloir principal"},
+                    {icon: 'fa-university', text: "Sortez de la Faculté FS"},
+                    {icon: 'fa-arrow-down', text: "Prenez l'allée principale devant vous"},
+                    {icon: 'fa-arrow-right', text: "Tournez à droite après 50 mètres"},
+                    {icon: 'fa-arrow-left', text: "Tournez à gauche après 30 mètres"},
+                    {icon: 'fa-utensils', text: "Le restaurant est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 8: Faculté Fdeg → Amphithéâtre Fdeg
+            else if (depart === "Faculté de Fdeg" && arrivee === "Amphithéâtre Fdeg") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5384, 43.1178],
+                    [11.5385, 43.1180],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de la Faculté Fdeg"},
+                    {icon: 'fa-arrow-up', text: "Avancez tout droit vers l'arrière du bâtiment"},
+                    {icon: 'fa-cube', text: "L'Amphithéâtre Fdeg est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 9: Amphithéâtre Fdeg → Faculté Fdeg (inverse du précédent)
+            else if (depart === "Amphithéâtre Fdeg" && arrivee === "Faculté de Fdeg") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5385, 43.1180],
+                    [11.5384, 43.1178],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de l'Amphithéâtre Fdeg"},
+                    {icon: 'fa-arrow-down', text: "Descendez vers l'avant du bâtiment"},
+                    {icon: 'fa-university', text: "La Faculté Fdeg est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 10: Faculté FLLSH → Amphithéâtre FLLSH
+            else if (depart === "Faculté de FLLSH" && arrivee === "Amphithéâtre FLLSH") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5377, 43.1178],
+                    [11.5377, 43.1180],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de la Faculté FLLSH"},
+                    {icon: 'fa-arrow-up', text: "Avancez tout droit vers l'arrière du bâtiment"},
+                    {icon: 'fa-cube', text: "L'Amphithéâtre FLLSH est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 11: Amphithéâtre FLLSH → Faculté FLLSH (inverse du précédent)
+            else if (depart === "Amphithéâtre FLLSH" && arrivee === "Faculté de FLLSH") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5377, 43.1180],
+                    [11.5377, 43.1178],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de l'Amphithéâtre FLLSH"},
+                    {icon: 'fa-arrow-down', text: "Descendez vers l'avant du bâtiment"},
+                    {icon: 'fa-university', text: "La Faculté FLLSH est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 12: Entrée principale → Mosquée (via services administratifs)
+            else if (depart === "Entrée principale (Porte de l'Université)" && arrivee === "Mosquée du Campus") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5388, 43.1166],
+                    lieux["Services Administratifs"].coords,
+                    [11.5388, 43.1175],
+                    [11.5389, 43.1180],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-arrow-up', text: "Avancez tout droit dans l'allée principale"},
+                    {icon: 'fa-briefcase', text: "Passez devant les services administratifs"},
+                    {icon: 'fa-arrow-up', text: "Continuez tout droit vers le haut du campus"},
+                    {icon: 'fa-mosque', text: "La mosquée est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 13: Mosquée → Entrée principale (inverse du précédent)
+            else if (depart === "Mosquée du Campus" && arrivee === "Entrée principale (Porte de l'Université)") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5389, 43.1180],
+                    [11.5388, 43.1175],
+                    lieux["Services Administratifs"].coords,
+                    [11.5388, 43.1166],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-arrow-down', text: "Descendez vers le bas du campus"},
+                    {icon: 'fa-briefcase', text: "Passez devant les services administratifs"},
+                    {icon: 'fa-arrow-down', text: "Continuez tout droit vers l'entrée principale"},
+                    {icon: 'fa-door-open', text: "L'entrée principale est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 14: Faculté Fdeg → Mosquée
+            else if (depart === "Faculté de Fdeg" && arrivee === "Mosquée du Campus") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5385, 43.1177],
+                    [11.5387, 43.1178],
+                    [11.5389, 43.1180],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de la Faculté Fdeg"},
+                    {icon: 'fa-arrow-left', text: "Tournez à gauche"},
+                    {icon: 'fa-arrow-up', text: "Avancez tout droit vers le haut du campus"},
+                    {icon: 'fa-arrow-right', text: "Tournez à droite"},
+                    {icon: 'fa-mosque', text: "La mosquée est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 15: Faculté FLLSH → Mosquée
+            else if (depart === "Faculté de FLLSH" && arrivee === "Mosquée du Campus") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5378, 43.1178],
+                    [11.5380, 43.1179],
+                    [11.5385, 43.1180],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de la Faculté FLLSH"},
+                    {icon: 'fa-arrow-right', text: "Prenez à droite vers l'allée centrale"},
+                    {icon: 'fa-university', text: "Passez près de la Faculté Fdeg (sur votre gauche)"},
+                    {icon: 'fa-arrow-up', text: "Continuez tout droit vers le haut du campus"},
+                    {icon: 'fa-mosque', text: "La mosquée est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 16: Faculté FS → Amphithéâtre FS
+            else if (depart === "Faculté FS" && arrivee === "Amphithéâtre FS") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5384, 43.1162],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de la Faculté FS"},
+                    {icon: 'fa-arrow-down', text: "Descendez vers l'arrière du bâtiment"},
+                    {icon: 'fa-cube', text: "L'Amphithéâtre FS est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 17: Amphithéâtre FS → Faculté FS (inverse du précédent)
+            else if (depart === "Amphithéâtre FS" && arrivee === "Faculté FS") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5384, 43.1162],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de l'Amphithéâtre FS"},
+                    {icon: 'fa-arrow-up', text: "Remontez vers l'avant du bâtiment"},
+                    {icon: 'fa-university', text: "La Faculté FS est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 18: Amphithéâtre FS → Restaurant (déjà fait plus haut)
+            // ITINÉRAIRE PERSONNALISÉ 19: Entrée principale → Mosquée (via bibliothèque)
+            else if (depart === "Entrée principale (Porte de l'Université)" && arrivee === "Mosquée du Campus") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5387, 43.1166],
+                    lieux["Bibliothèque Universitaire"].coords,
+                    [11.5387, 43.1170],
+                    [11.5387, 43.1175],
+                    [11.5389, 43.1180],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-arrow-up', text: "Avancez tout droit dans l'allée principale"},
+                    {icon: 'fa-book', text: "Passez près de la bibliothèque (sur votre droite)"},
+                    {icon: 'fa-university', text: "La Faculté Fdeg est en face"},
+                    {icon: 'fa-arrow-left', text: "Tournez à gauche"},
+                    {icon: 'fa-arrow-up', text: "Continuez tout droit vers le haut du campus"},
+                    {icon: 'fa-mosque', text: "La mosquée est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 20: Mosquée → Entrée principale (inverse du précédent)
+            else if (depart === "Mosquée du Campus" && arrivee === "Entrée principale (Porte de l'Université)") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5389, 43.1180],
+                    [11.5387, 43.1175],
+                    [11.5387, 43.1170],
+                    lieux["Bibliothèque Universitaire"].coords,
+                    [11.5387, 43.1166],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-arrow-down', text: "Descendez vers le bas du campus"},
+                    {icon: 'fa-arrow-right', text: "Tournez à droite après la Faculté Fdeg"},
+                    {icon: 'fa-book', text: "Passez près de la bibliothèque (sur votre gauche)"},
+                    {icon: 'fa-arrow-down', text: "Continuez tout droit vers l'entrée principale"},
+                    {icon: 'fa-door-open', text: "L'entrée principale est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+
+                        // ITINÉRAIRE PERSONNALISÉ 21: Faculté Fdeg → Faculté FLLSH
+                        else if (depart === "Faculté de Fdeg" && arrivee === "Faculté de FLLSH") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5384, 43.1175],
+                    [11.5380, 43.1175],
+                    [11.5377, 43.1175],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de la Faculté Fdeg"},
+                    {icon: 'fa-arrow-left', text: "Prenez à gauche vers l'allée centrale"},
+                    {icon: 'fa-arrow-down', text: "Continuez tout droit (environ 80 mètres)"},
+                    {icon: 'fa-university', text: "La Faculté FLLSH est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 22: Faculté FLLSH → Faculté Fdeg (inverse du précédent)
+            else if (depart === "Faculté de FLLSH" && arrivee === "Faculté de Fdeg") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5377, 43.1175],
+                    [11.5380, 43.1175],
+                    [11.5384, 43.1175],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de la Faculté FLLSH"},
+                    {icon: 'fa-arrow-right', text: "Prenez à droite vers l'allée centrale"},
+                    {icon: 'fa-arrow-up', text: "Continuez tout droit (environ 80 mètres)"},
+                    {icon: 'fa-university', text: "La Faculté Fdeg est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 23: Bibliothèque → Faculté Fdeg
+            else if (depart === "Bibliothèque Universitaire" && arrivee === "Faculté de Fdeg") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5387, 43.1168],
+                    [11.5384, 43.1170],
+                    [11.5384, 43.1175],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de la bibliothèque"},
+                    {icon: 'fa-arrow-up', text: "Prenez l'allée principale devant vous"},
+                    {icon: 'fa-arrow-up', text: "Continuez tout droit (environ 70 mètres)"},
+                    {icon: 'fa-university', text: "La Faculté Fdeg est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 24: Faculté Fdeg → Bibliothèque (inverse du précédent)
+            else if (depart === "Faculté de Fdeg" && arrivee === "Bibliothèque Universitaire") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5384, 43.1175],
+                    [11.5384, 43.1170],
+                    [11.5387, 43.1168],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de la Faculté Fdeg"},
+                    {icon: 'fa-arrow-down', text: "Prenez l'allée principale devant vous"},
+                    {icon: 'fa-arrow-down', text: "Continuez tout droit (environ 70 mètres)"},
+                    {icon: 'fa-book', text: "La bibliothèque est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 25: Faculté FLLSH → Mosquée
+            else if (depart === "Faculté de FLLSH" && arrivee === "Mosquée du Campus") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5378, 43.1178],
+                    [11.5380, 43.1179],
+                    [11.5385, 43.1180],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de la Faculté FLLSH"},
+                    {icon: 'fa-arrow-right', text: "Prenez à droite vers l'allée centrale"},
+                    {icon: 'fa-arrow-up', text: "Continuez tout droit vers le haut du campus"},
+                    {icon: 'fa-arrow-right', text: "Tournez à droite"},
+                    {icon: 'fa-mosque', text: "La mosquée est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 26: Mosquée → Faculté FLLSH (inverse du précédent)
+            else if (depart === "Mosquée du Campus" && arrivee === "Faculté de FLLSH") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5385, 43.1180],
+                    [11.5380, 43.1179],
+                    [11.5378, 43.1178],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-arrow-left', text: "Tournez à gauche"},
+                    {icon: 'fa-arrow-down', text: "Descendez vers le bas du campus"},
+                    {icon: 'fa-arrow-left', text: "Tournez à gauche vers l'allée centrale"},
+                    {icon: 'fa-university', text: "La Faculté FLLSH est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+
+
+                        // ITINÉRAIRE PERSONNALISÉ 27: Amphithéâtre Fdeg → Amphithéâtre FLLSH
+                        else if (depart === "Amphithéâtre Fdeg" && arrivee === "Amphithéâtre FLLSH") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5385, 43.1180],
+                    [11.5384, 43.1178],
+                    lieux["Faculté de Fdeg"].coords,
+                    [11.5384, 43.1175],
+                    [11.5380, 43.1175],
+                    [11.5377, 43.1175],
+                    lieux["Faculté de FLLSH"].coords,
+                    [11.5377, 43.1180],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de l'Amphithéâtre Fdeg"},
+                    {icon: 'fa-arrow-down', text: "Descendez vers l'avant du bâtiment"},
+                    {icon: 'fa-university', text: "Sortez de la Faculté Fdeg"},
+                    {icon: 'fa-arrow-left', text: "Tournez à gauche vers l'allée centrale"},
+                    {icon: 'fa-arrow-down', text: "Continuez tout droit (environ 80 mètres)"},
+                    {icon: 'fa-university', text: "Entrez dans la Faculté FLLSH"},
+                    {icon: 'fa-arrow-up', text: "Avancez vers l'arrière du bâtiment"},
+                    {icon: 'fa-cube', text: "L'Amphithéâtre FLLSH est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 28: Amphithéâtre FLLSH → Amphithéâtre Fdeg (inverse du précédent)
+            else if (depart === "Amphithéâtre FLLSH" && arrivee === "Amphithéâtre Fdeg") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5377, 43.1180],
+                    [11.5377, 43.1175],
+                    [11.5380, 43.1175],
+                    [11.5384, 43.1175],
+                    lieux["Faculté de Fdeg"].coords,
+                    [11.5384, 43.1178],
+                    [11.5385, 43.1180],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de l'Amphithéâtre FLLSH"},
+                    {icon: 'fa-arrow-down', text: "Descendez vers l'avant du bâtiment"},
+                    {icon: 'fa-university', text: "Sortez de la Faculté FLLSH"},
+                    {icon: 'fa-arrow-right', text: "Tournez à droite vers l'allée centrale"},
+                    {icon: 'fa-arrow-up', text: "Continuez tout droit (environ 80 mètres)"},
+                    {icon: 'fa-university', text: "Entrez dans la Faculté Fdeg"},
+                    {icon: 'fa-arrow-up', text: "Avancez vers l'arrière du bâtiment"},
+                    {icon: 'fa-cube', text: "L'Amphithéâtre Fdeg est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 29: Amphithéâtre FLLSH → Faculté FS
+            else if (depart === "Amphithéâtre FLLSH" && arrivee === "Faculté FS") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5377, 43.1180],
+                    [11.5377, 43.1175],
+                    [11.5380, 43.1175],
+                    [11.5384, 43.1175],
+                    [11.5384, 43.1170],
+                    [11.5384, 43.1165],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de l'Amphithéâtre FLLSH"},
+                    {icon: 'fa-arrow-down', text: "Descendez vers l'avant du bâtiment"},
+                    {icon: 'fa-university', text: "Sortez de la Faculté FLLSH"},
+                    {icon: 'fa-arrow-right', text: "Tournez à droite vers l'allée centrale"},
+                    {icon: 'fa-arrow-up', text: "Continuez tout droit (environ 80 mètres)"},
+                    {icon: 'fa-arrow-down', text: "Descendez vers le bas du campus"},
+                    {icon: 'fa-university', text: "La Faculté FS est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 30: Faculté FS → Amphithéâtre FLLSH (inverse du précédent)
+            else if (depart === "Faculté FS" && arrivee === "Amphithéâtre FLLSH") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5384, 43.1165],
+                    [11.5384, 43.1170],
+                    [11.5384, 43.1175],
+                    [11.5380, 43.1175],
+                    [11.5377, 43.1175],
+                    lieux["Faculté de FLLSH"].coords,
+                    [11.5377, 43.1180],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de la Faculté FS"},
+                    {icon: 'fa-arrow-up', text: "Montez vers le haut du campus"},
+                    {icon: 'fa-arrow-left', text: "Tournez à gauche vers l'allée centrale"},
+                    {icon: 'fa-arrow-down', text: "Continuez tout droit (environ 80 mètres)"},
+                    {icon: 'fa-university', text: "Entrez dans la Faculté FLLSH"},
+                    {icon: 'fa-arrow-up', text: "Avancez vers l'arrière du bâtiment"},
+                    {icon: 'fa-cube', text: "L'Amphithéâtre FLLSH est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 31: Amphithéâtre Fdeg → Faculté FS
+            else if (depart === "Amphithéâtre Fdeg" && arrivee === "Faculté FS") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5385, 43.1180],
+                    [11.5384, 43.1178],
+                    lieux["Faculté de Fdeg"].coords,
+                    [11.5384, 43.1175],
+                    [11.5384, 43.1170],
+                    [11.5384, 43.1165],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de l'Amphithéâtre Fdeg"},
+                    {icon: 'fa-arrow-down', text: "Descendez vers l'avant du bâtiment"},
+                    {icon: 'fa-university', text: "Sortez de la Faculté Fdeg"},
+                    {icon: 'fa-arrow-down', text: "Descendez vers le bas du campus"},
+                    {icon: 'fa-arrow-down', text: "Continuez tout droit (environ 100 mètres)"},
+                    {icon: 'fa-university', text: "La Faculté FS est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 32: Faculté FS → Amphithéâtre Fdeg (inverse du précédent)
+            else if (depart === "Faculté FS" && arrivee === "Amphithéâtre Fdeg") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5384, 43.1165],
+                    [11.5384, 43.1170],
+                    [11.5384, 43.1175],
+                    lieux["Faculté de Fdeg"].coords,
+                    [11.5384, 43.1178],
+                    [11.5385, 43.1180],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de la Faculté FS"},
+                    {icon: 'fa-arrow-up', text: "Montez vers le haut du campus"},
+                    {icon: 'fa-arrow-up', text: "Continuez tout droit (environ 100 mètres)"},
+                    {icon: 'fa-university', text: "Entrez dans la Faculté Fdeg"},
+                    {icon: 'fa-arrow-up', text: "Avancez vers l'arrière du bâtiment"},
+                    {icon: 'fa-cube', text: "L'Amphithéâtre Fdeg est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+                        // ITINÉRAIRE PERSONNALISÉ 39: Amphithéâtre FLLSH → Restaurant
+                        else if (depart === "Amphithéâtre FLLSH" && arrivee === "Restaurant Universitaire de Djibouti") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5377, 43.1180],
+                    [11.5377, 43.1175],
+                    lieux["Faculté de FLLSH"].coords,
+                    [11.5377, 43.1170],
+                    [11.5375, 43.1160],
+                    [11.5374, 43.1158],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de l'Amphithéâtre FLLSH"},
+                    {icon: 'fa-arrow-down', text: "Descendez vers l'avant du bâtiment"},
+                    {icon: 'fa-university', text: "Sortez de la Faculté FLLSH"},
+                    {icon: 'fa-arrow-down', text: "Marchez tout droit vers le bas du campus"},
+                    {icon: 'fa-arrow-left', text: "Tournez à gauche"},
+                    {icon: 'fa-arrow-down', text: "Continuez tout droit (50 mètres)"},
+                    {icon: 'fa-utensils', text: "Le restaurant est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 40: Restaurant → Amphithéâtre FLLSH (inverse)
+            else if (depart === "Restaurant Universitaire de Djibouti" && arrivee === "Amphithéâtre FLLSH") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5374, 43.1158],
+                    [11.5375, 43.1160],
+                    [11.5377, 43.1170],
+                    lieux["Faculté de FLLSH"].coords,
+                    [11.5377, 43.1175],
+                    [11.5377, 43.1180],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-arrow-right', text: "Tournez à droite"},
+                    {icon: 'fa-arrow-up', text: "Marchez tout droit vers le haut du campus"},
+                    {icon: 'fa-arrow-right', text: "Tournez à droite"},
+                    {icon: 'fa-arrow-up', text: "Continuez tout droit (70 mètres)"},
+                    {icon: 'fa-university', text: "Entrez dans la Faculté FLLSH"},
+                    {icon: 'fa-arrow-up', text: "Avancez vers l'arrière du bâtiment"},
+                    {icon: 'fa-cube', text: "L'Amphithéâtre FLLSH est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 41: Amphithéâtre Fdeg → Restaurant
+            else if (depart === "Amphithéâtre Fdeg" && arrivee === "Restaurant Universitaire de Djibouti") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5385, 43.1180],
+                    [11.5384, 43.1178],
+                    lieux["Faculté de Fdeg"].coords,
+                    [11.5384, 43.1170],
+                    [11.5380, 43.1160],
+                    [11.5376, 43.1158],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de l'Amphithéâtre Fdeg"},
+                    {icon: 'fa-arrow-down', text: "Descendez vers l'avant du bâtiment"},
+                    {icon: 'fa-university', text: "Sortez de la Faculté Fdeg"},
+                    {icon: 'fa-arrow-down', text: "Marchez tout droit vers le bas du campus"},
+                    {icon: 'fa-arrow-left', text: "Tournez à gauche"},
+                    {icon: 'fa-arrow-down', text: "Continuez tout droit (60 mètres)"},
+                    {icon: 'fa-utensils', text: "Le restaurant est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 42: Restaurant → Amphithéâtre Fdeg (inverse)
+            else if (depart === "Restaurant Universitaire de Djibouti" && arrivee === "Amphithéâtre Fdeg") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5376, 43.1158],
+                    [11.5380, 43.1160],
+                    [11.5384, 43.1170],
+                    lieux["Faculté de Fdeg"].coords,
+                    [11.5384, 43.1178],
+                    [11.5385, 43.1180],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-arrow-right', text: "Tournez à droite"},
+                    {icon: 'fa-arrow-up', text: "Marchez tout droit vers le haut du campus"},
+                    {icon: 'fa-arrow-right', text: "Tournez à droite"},
+                    {icon: 'fa-arrow-up', text: "Continuez tout droit (80 mètres)"},
+                    {icon: 'fa-university', text: "Entrez dans la Faculté Fdeg"},
+                    {icon: 'fa-arrow-up', text: "Avancez vers l'arrière du bâtiment"},
+                    {icon: 'fa-cube', text: "L'Amphithéâtre Fdeg est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 43: Faculté Fdeg → Restaurant
+            else if (depart === "Faculté de Fdeg" && arrivee === "Restaurant Universitaire de Djibouti") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5384, 43.1170],
+                    [11.5380, 43.1160],
+                    [11.5376, 43.1158],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de la Faculté Fdeg"},
+                    {icon: 'fa-arrow-down', text: "Marchez tout droit vers le bas du campus"},
+                    {icon: 'fa-arrow-left', text: "Tournez à gauche"},
+                    {icon: 'fa-arrow-down', text: "Continuez tout droit (60 mètres)"},
+                    {icon: 'fa-utensils', text: "Le restaurant est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 44: Restaurant → Faculté Fdeg (inverse)
+            else if (depart === "Restaurant Universitaire de Djibouti" && arrivee === "Faculté de Fdeg") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5376, 43.1158],
+                    [11.5380, 43.1160],
+                    [11.5384, 43.1170],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-arrow-right', text: "Tournez à droite"},
+                    {icon: 'fa-arrow-up', text: "Marchez tout droit vers le haut du campus"},
+                    {icon: 'fa-arrow-right', text: "Tournez à droite"},
+                    {icon: 'fa-arrow-up', text: "Continuez tout droit (80 mètres)"},
+                    {icon: 'fa-university', text: "La Faculté Fdeg est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+                        // ITINÉRAIRE PERSONNALISÉ 45: Bibliothèque → Amphithéâtre FS
+                        else if (depart === "Bibliothèque Universitaire" && arrivee === "Amphithéâtre FS") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5387, 43.1167],
+                    lieux["Faculté FS"].coords,
+                    [11.5384, 43.1162],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de la bibliothèque"},
+                    {icon: 'fa-arrow-down', text: "Marchez tout droit vers le bas du campus"},
+                    {icon: 'fa-university', text: "Entrez dans la Faculté FS"},
+                    {icon: 'fa-arrow-down', text: "Avancez dans le couloir principal"},
+                    {icon: 'fa-cube', text: "L'Amphithéâtre FS est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 46: Amphithéâtre FS → Bibliothèque (inverse)
+            else if (depart === "Amphithéâtre FS" && arrivee === "Bibliothèque Universitaire") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5384, 43.1162],
+                    lieux["Faculté FS"].coords,
+                    [11.5387, 43.1167],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de l'Amphithéâtre FS"},
+                    {icon: 'fa-arrow-up', text: "Remontez le couloir principal"},
+                    {icon: 'fa-university', text: "Sortez de la Faculté FS"},
+                    {icon: 'fa-arrow-up', text: "Marchez tout droit vers le haut du campus"},
+                    {icon: 'fa-book', text: "La bibliothèque est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 47: Bibliothèque → Amphithéâtre Fdeg
+            else if (depart === "Bibliothèque Universitaire" && arrivee === "Amphithéâtre Fdeg") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5387, 43.1168],
+                    [11.5385, 43.1170],
+                    [11.5384, 43.1175],
+                    lieux["Faculté de Fdeg"].coords,
+                    [11.5384, 43.1178],
+                    [11.5385, 43.1180],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de la bibliothèque"},
+                    {icon: 'fa-arrow-up', text: "Marchez vers l'allée principale"},
+                    {icon: 'fa-arrow-left', text: "Tournez à gauche"},
+                    {icon: 'fa-arrow-up', text: "Continuez tout droit (70 mètres)"},
+                    {icon: 'fa-university', text: "Entrez dans la Faculté Fdeg"},
+                    {icon: 'fa-arrow-up', text: "Avancez vers l'arrière du bâtiment"},
+                    {icon: 'fa-cube', text: "L'Amphithéâtre Fdeg est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 48: Amphithéâtre Fdeg → Bibliothèque (inverse)
+            else if (depart === "Amphithéâtre Fdeg" && arrivee === "Bibliothèque Universitaire") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5385, 43.1180],
+                    [11.5384, 43.1178],
+                    lieux["Faculté de Fdeg"].coords,
+                    [11.5384, 43.1175],
+                    [11.5385, 43.1170],
+                    [11.5387, 43.1168],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de l'Amphithéâtre Fdeg"},
+                    {icon: 'fa-arrow-down', text: "Descendez vers l'avant du bâtiment"},
+                    {icon: 'fa-university', text: "Sortez de la Faculté Fdeg"},
+                    {icon: 'fa-arrow-right', text: "Tournez à droite"},
+                    {icon: 'fa-arrow-down', text: "Continuez tout droit (70 mètres)"},
+                    {icon: 'fa-book', text: "La bibliothèque est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 49: Bibliothèque → Amphithéâtre FLLSH
+            else if (depart === "Bibliothèque Universitaire" && arrivee === "Amphithéâtre FLLSH") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5387, 43.1168],
+                    [11.5385, 43.1170],
+                    [11.5380, 43.1170], // Passage près de la Tour Eiffel
+                    [11.5377, 43.1175],
+                    lieux["Faculté de FLLSH"].coords,
+                    [11.5377, 43.1180],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de la bibliothèque"},
+                    {icon: 'fa-arrow-up', text: "Marchez vers l'allée principale"},
+                    {icon: 'fa-landmark', text: "Passez près de la Tour Eiffel"},
+                    {icon: 'fa-arrow-left', text: "Tournez à gauche vers l'allée centrale"},
+                    {icon: 'fa-arrow-up', text: "Continuez tout droit (60 mètres)"},
+                    {icon: 'fa-university', text: "Entrez dans la Faculté FLLSH"},
+                    {icon: 'fa-arrow-up', text: "Avancez vers l'arrière du bâtiment"},
+                    {icon: 'fa-cube', text: "L'Amphithéâtre FLLSH est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 50: Amphithéâtre FLLSH → Bibliothèque (inverse)
+            else if (depart === "Amphithéâtre FLLSH" && arrivee === "Bibliothèque Universitaire") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5377, 43.1180],
+                    [11.5377, 43.1175],
+                    lieux["Faculté de FLLSH"].coords,
+                    [11.5377, 43.1170],
+                    [11.5380, 43.1170], // Passage près de la Tour Eiffel
+                    [11.5385, 43.1170],
+                    [11.5387, 43.1168],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de l'Amphithéâtre FLLSH"},
+                    {icon: 'fa-arrow-down', text: "Descendez vers l'avant du bâtiment"},
+                    {icon: 'fa-university', text: "Sortez de la Faculté FLLSH"},
+                    {icon: 'fa-arrow-right', text: "Tournez à droite vers l'allée centrale"},
+                    {icon: 'fa-landmark', text: "Passez près de la Tour Eiffel"},
+                    {icon: 'fa-arrow-down', text: "Continuez tout droit vers le bas du campus"},
+                    {icon: 'fa-book', text: "La bibliothèque est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+                        // ITINÉRAIRE PERSONNALISÉ 51: Entrée principale → Amphithéâtre FS
+                        else if (depart === "Entrée principale (Porte de l'Université)" && arrivee === "Amphithéâtre FS") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5388, 43.1166],
+                    [11.5387, 43.1165],
+                    lieux["Faculté FS"].coords,
+                    [11.5384, 43.1162],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-arrow-up', text: "Avancez tout droit dans l'allée principale"},
+                    {icon: 'fa-arrow-down', text: "Continuez tout droit (environ 80 mètres)"},
+                    {icon: 'fa-university', text: "Entrez dans la Faculté FS"},
+                    {icon: 'fa-arrow-down', text: "Avancez dans le couloir principal"},
+                    {icon: 'fa-cube', text: "L'Amphithéâtre FS est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 52: Amphithéâtre FS → Entrée principale (inverse)
+            else if (depart === "Amphithéâtre FS" && arrivee === "Entrée principale (Porte de l'Université)") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5384, 43.1162],
+                    lieux["Faculté FS"].coords,
+                    [11.5387, 43.1165],
+                    [11.5388, 43.1166],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de l'Amphithéâtre FS"},
+                    {icon: 'fa-arrow-up', text: "Remontez le couloir principal"},
+                    {icon: 'fa-university', text: "Sortez de la Faculté FS"},
+                    {icon: 'fa-arrow-up', text: "Marchez tout droit vers l'entrée principale"},
+                    {icon: 'fa-door-open', text: "L'entrée principale est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 53: Entrée principale → Faculté d'Ingénierie
+            else if (depart === "Entrée principale (Porte de l'Université)" && arrivee === "Faculté FS") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5388, 43.1166],
+                    [11.5387, 43.1165],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-arrow-up', text: "Avancez tout droit dans l'allée principale"},
+                    {icon: 'fa-arrow-down', text: "Continuez tout droit (environ 80 mètres)"},
+                    {icon: 'fa-university', text: "La Faculté d'Ingénierie (FS) est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE PERSONNALISÉ 54: Faculté d'Ingénierie → Entrée principale (inverse)
+            else if (depart === "Faculté FS" && arrivee === "Entrée principale (Porte de l'Université)") {
+                var pointsItineraire = [
+                    lieux[depart].coords,
+                    [11.5387, 43.1165],
+                    [11.5388, 43.1166],
+                    lieux[arrivee].coords
+                ];
+                
+                customRoute = L.polyline(pointsItineraire.map(p => L.latLng(p[0], p[1])), {
+                    color: '#e74c3c',
+                    weight: 6,
+                    opacity: 0.9
+                }).addTo(map);
+                
+                map.fitBounds(customRoute.getBounds());
+                
+                instructionsList.innerHTML = '';
+                
+                var startStep = document.createElement('div');
+                startStep.className = 'instruction-step';
+                startStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Départ:</strong> ${depart}
+                    </div>
+                `;
+                instructionsList.appendChild(startStep);
+                
+                var customSteps = [
+                    {icon: 'fa-door-open', text: "Sortez de la Faculté d'Ingénierie (FS)"},
+                    {icon: 'fa-arrow-up', text: "Marchez tout droit vers l'entrée principale"},
+                    {icon: 'fa-door-open', text: "L'entrée principale est devant vous"}
+                ];
+                
+                customSteps.forEach(function(step) {
+                    var stepElement = document.createElement('div');
+                    stepElement.className = 'instruction-step';
+                    stepElement.innerHTML = `
+                        <div class="instruction-icon"><i class="fas ${step.icon}" style="color: #3498db;"></i></div>
+                        <div class="instruction-text">${step.text}</div>
+                    `;
+                    instructionsList.appendChild(stepElement);
+                });
+                
+                var endStep = document.createElement('div');
+                endStep.className = 'instruction-step';
+                endStep.innerHTML = `
+                    <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                    <div class="instruction-text">
+                        <strong>Arrivée:</strong> ${arrivee}
+                    </div>
+                `;
+                instructionsList.appendChild(endStep);
+                
+                instructionsPanel.style.display = 'block';
+            }
+            // ITINÉRAIRE NORMAL (calcul automatique pour les autres combinaisons)
+            else {
+                controleItineraire = L.Routing.control({
+                    waypoints: [
+                        L.latLng(lieux[depart].coords[0], lieux[depart].coords[1]),
+                        L.latLng(lieux[arrivee].coords[0], lieux[arrivee].coords[1])
+                    ],
+                    routeWhileDragging: false,
+                    showAlternatives: false,
+                    fitSelectedRoutes: true,
+                    collapsible: false,
+                    addWaypoints: false,
+                    draggableWaypoints: false,
+                    lineOptions: {
+                        styles: [{color: '#e74c3c', opacity: 0.9, weight: 6}]
+                    },
+                    createMarker: function() { return null; },
+                    formatter: new L.Routing.Formatter({
+                        language: 'fr',
+                        units: 'metric'
+                    })
+                }).addTo(map);
+                
+                controleItineraire.on('routesfound', function(e) {
+                    var routes = e.routes;
+                    var instructions = routes[0].instructions;
+                    
+                    instructionsList.innerHTML = '';
+                    
+                    // Point de départ
+                    var startStep = document.createElement('div');
+                    startStep.className = 'instruction-step';
+                    startStep.innerHTML = `
+                        <div class="instruction-icon"><i class="fas fa-map-marker-alt" style="color: #2ecc71;"></i></div>
+                        <div class="instruction-text">
+                            <strong>Départ:</strong> ${depart}
+                        </div>
+                    `;
+                    instructionsList.appendChild(startStep);
+                    
+                    instructions.forEach(function(instruction, index) {
+                        var step = document.createElement('div');
+                        step.className = 'instruction-step';
+                        
+                        var icon, iconColor;
+                        if (instruction.text.includes('à gauche')) {
+                            icon = 'fa-arrow-left';
+                            iconColor = '#3498db';
+                        } else if (instruction.text.includes('à droite')) {
+                            icon = 'fa-arrow-right';
+                            iconColor = '#3498db';
+                        } else if (instruction.text.includes('tout droit')) {
+                            icon = 'fa-arrow-up';
+                            iconColor = '#3498db';
+                        } else {
+                            icon = 'fa-arrow-right';
+                            iconColor = '#7f8c8d';
+                        }
+                        
+                        step.innerHTML = `
+                            <div class="instruction-icon"><i class="fas ${icon}" style="color: ${iconColor};"></i></div>
+                            <div class="instruction-text">
+                                ${instruction.text}
+                                <div class="instruction-distance">${instruction.distance} m • ${instruction.time}</div>
+                            </div>
+                        `;
+                        instructionsList.appendChild(step);
+                    });
+                    
+                    // Point d'arrivée
+                    var endStep = document.createElement('div');
+                    endStep.className = 'instruction-step';
+                    endStep.innerHTML = `
+                        <div class="instruction-icon"><i class="fas fa-flag-checkered" style="color: #e74c3c;"></i></div>
+                        <div class="instruction-text">
+                            <strong>Arrivée:</strong> ${arrivee}
+                        </div>
+                    `;
+                    instructionsList.appendChild(endStep);
+                    
+                    instructionsPanel.style.display = 'block';
+                });
+            }
+        });
+        
+        // Bouton pour effacer l'itinéraire
+        document.getElementById('effacer').addEventListener('click', function() {
+            if (controleItineraire) {
+                map.removeControl(controleItineraire);
+                controleItineraire = null;
+            }
+            if (customRoute) {
+                map.removeLayer(customRoute);
+                customRoute = null;
+            }
+            instructionsPanel.style.display = 'none';
+            instructionsList.innerHTML = '';
+        });
+
+        // Ajustement de la carte pour éviter le chevauchement
+        map.on('resize', function() {
+            if (controleItineraire) {
+                map.fitBounds(controleItineraire.getPlan().getWaypoints(), {padding: [50, 50]});
+            }
+            if (customRoute) {
+                map.fitBounds(customRoute.getBounds());
+            }
+        });
+    </script>
+    <script>
+        document.getElementById('backButton').addEventListener('click', function() {
+    // Redirection vers la page d'accueil
+    window.location.href = '/page_acceuil'; // Remplacez par l'URL de votre page d'accueil
+    
+   
+});
+    </script>
+</body>
+</html>

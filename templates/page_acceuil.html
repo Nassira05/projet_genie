@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='CSS/page.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
         .notification-badge {
             display: inline-block;
@@ -82,9 +83,32 @@
             .dropdown.active .dropdown-menu {
                 display: block;
             }
+
+            /* Hero section adjustments */
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .search-form input {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .search-form button {
+                width: 100%;
+                margin-left: 0;
+            }
         }
 
-        /* Responsive adjustments */
+        /* Tablet adjustments */
         @media (max-width: 992px) {
             .info {
                 flex-wrap: wrap;
@@ -107,17 +131,14 @@
                 width: 100%;
                 margin-top: 20px;
             }
+
+            .photo-cards {
+                flex-wrap: wrap;
+            }
         }
 
+        /* Mobile adjustments */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            
-            .search-form input {
-                width: 80%;
-            }
-            
             .card {
                 width: 100%;
             }
@@ -129,30 +150,24 @@
             .contact-container {
                 flex-direction: column;
             }
+
+            .contact-form, .contact-info {
+                width: 100%;
+            }
         }
 
+        /* Small mobile adjustments */
         @media (max-width: 480px) {
             .hero h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
             
-            .hero p {
-                font-size: 1rem;
+            .section-title {
+                font-size: 1.5rem;
             }
             
-            .search-form {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .search-form input {
-                width: 100%;
-                margin-bottom: 10px;
-            }
-            
-            .search-form button {
-                width: 100%;
-                margin-left: 0;
+            .announcement-text h3 {
+                font-size: 1.2rem;
             }
         }
     </style>
@@ -166,9 +181,9 @@
             <div class="menu-toggle">☰</div>
             <ul class="menu">
                 <li><a href="page_acceuil">Accueil</a></li>
-                <li><a href="#">Orientation</a></li>
+                <li><a href="{{ url_for('carte') }}">Orientation</a></li>
                 <li class="dropdown">
-                    <a href="#">Support Administratif <i class='bx bx-chevron-down'></i></a>
+                    <a href="#">Support Administratif</a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for('renseignement') }}">Renseignement sur les filières</a></li>
                         <li><a href="{{ url_for('page_inscription') }}">Étapes de l'inscription</a></li>
@@ -185,16 +200,13 @@
                 </li>
                 <li><a href="{{ url_for('guide_academique') }}">Guide Académique</a></li>
                 <li><a href="{{ url_for('faq') }}">FAQ</a></li>
-                <li><a href="#">Contact</a></li>
+                
             </ul>
         </nav>
         <div class="hero">
-            <h1>Bienvenue sur votre guide StartUni</h1>
+            <h1>Bienvenue {{ prenom_utilisateur }} sur StartUni</h1>
             <p>Retrouvez toutes les informations pour bien débuter votre parcours universitaire.</p>
-            <form action="#" method="get" class="search-form">
-                <input type="text" placeholder="Que cherchez-vous ?" name="query">
-                <button type="submit">Rechercher</button>
-            </form>
+           
         </div>
     </header>
 
@@ -272,7 +284,7 @@
                 </div>
                 <div class="contact-form">
                     <h3>Envoyez-nous un message</h3>
-                    <form action="#" method="post">
+                    <form action="{{ url_for('submit_contact') }}" method="post">
                         <input type="text" name="name" placeholder="Votre nom" required>
                         <input type="email" name="email" placeholder="Votre email" required>
                         <textarea name="message" rows="5" placeholder="Votre message" required></textarea>
@@ -329,14 +341,29 @@
                     }
                 });
             });
+
+            // Animation for welcome text
+            const welcomeTitle = document.querySelector('.hero h1');
+            const originalText = welcomeTitle.textContent;
+            welcomeTitle.innerHTML = '';
+            
+            originalText.split('').forEach((char, index) => {
+                const span = document.createElement('span');
+                
+                if(char === ' ') {
+                    span.textContent = '\u00A0';
+                    span.className = 'space';
+                } else {
+                    span.textContent = char;
+                    span.style.animationDelay = `${index * 0.05}s`;
+                }
+                
+                welcomeTitle.appendChild(span);
+            });
         });
 
         function openChatbot() {
-            document.getElementById('chatbot').style.display = 'block';
-        }
-
-        function closeChatbot() {
-            document.getElementById('chatbot').style.display = 'none';
+            // Functionality for chatbot
         }
     </script>
 </body>

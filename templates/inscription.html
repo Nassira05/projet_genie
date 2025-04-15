@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inscription - StartUni</title>
+  <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -13,6 +14,54 @@
       --light-gray: #f8f9fa;
       --medium-gray: #e9ecef;
       --dark-gray: #6c757d;
+      --success-color: #4CAF50;
+      --error-color: #F44336;
+    }
+
+    /* Styles pour les messages flash */
+    .flash-messages {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      width: 300px;
+    }
+    
+    .flash-message {
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      color: white;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      animation: slideIn 0.5s, fadeOut 0.5s 4.5s forwards;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+    }
+    
+    .flash-success {
+      background-color: var(--success-color);
+      border-left: 4px solid #2E7D32;
+    }
+    
+    .flash-error {
+      background-color: var(--error-color);
+      border-left: 4px solid #C62828;
+    }
+    
+    .flash-icon {
+      margin-right: 10px;
+      font-size: 20px;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+    
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
     }
 
     body {
@@ -105,70 +154,92 @@
       text-align: center;
       font-size: 12px;
       color: var(--dark-gray);
-
     }
 
-  .login-link a {
-      color: var(--primary-color);
-      
-      font-weight: 500;
-    }
     .login-link a {
-  color: var(--primary-color);
-  text-decoration: none; /* Pas de soulignement par défaut */
-  font-weight: 500;
-  transition: text-decoration 0.2s ease; /* Animation fluide */
-}
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 500;
+      transition: text-decoration 0.2s ease;
+    }
 
-.login-link a:hover {
-  text-decoration: underline; /* Soulignement au survol */
-}
-   
+    .login-link a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
-  <div class="signup-container">
-    <div class="logo">
-      <h1><span class="start">Start</span><span class="uni">Uni</span></h1>
-    </div>
-    
-    <div class="signup-header">
-      <h2>Créez votre compte</h2>
-      <p>Rejoignez notre communauté</p>
-    </div>
-
-    <form action="/inscription" method="POST">
-      <div class="form-group">
-        <label for="nom">Nom</label>
-        <input type="text" id="nom" name="nom" placeholder="Votre nom" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="prenom">Prénom</label>
-        <input type="text" id="prenom" name="prenom" placeholder="Votre prénom" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="exemple@universite.fr" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="password">Mot de passe</label>
-        <input type="password" id="password" name="password" placeholder="••••••••" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="confirm-password">Confirmation</label>
-        <input type="password" id="confirm-password" name="confirm-password" placeholder="••••••••" required>
-      </div>
-      
-      <button type="submit" class="btn-primary">S'inscrire</button>
-    </form>
-    
-    <div class="login-link">
-      <p>Déjà inscrit ? <a href="{{ url_for('connexion_011737') }}">Connectez-vous</a></p>
-    </div>
+  <!-- Section pour les messages flash -->
+  <div class="flash-messages">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message flash-{{ category }}">
+            {% if category == 'success' %}
+              <i class='bx bx-check-circle flash-icon'></i>
+            {% else %}
+              <i class='bx bx-error-circle flash-icon'></i>
+            {% endif %}
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
   </div>
+
+  <div class="signup-container">
+      <div class="logo">
+          <h1><span class="start">Start</span><span class="uni">Uni</span></h1>
+      </div>
+
+      <div class="signup-header">
+          <h2>Créez votre compte</h2>
+          <p>Rejoignez notre communauté</p>
+      </div>
+
+      <form action="/inscription" method="POST" onsubmit="return validatePassword()">
+          <div class="form-group">
+              <label for="nom">Nom</label>
+              <input type="text" id="nom" name="nom" placeholder="Votre nom" required>
+          </div>
+
+          <div class="form-group">
+              <label for="prenom">Prénom</label>
+              <input type="text" id="prenom" name="prenom" placeholder="Votre prénom" required>
+          </div>
+
+          <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="exemple@universite.fr" required>
+          </div>
+
+          <div class="form-group">
+              <label for="password">Mot de passe</label>
+              <input type="password" id="password" name="password" placeholder="••••••••" required>
+          </div>
+
+          <div class="form-group">
+              <label for="confirm-password">Confirmation</label>
+              <input type="password" id="confirm-password" name="confirm-password" placeholder="••••••••" required>
+          </div>
+
+          <button type="submit" class="btn-primary">S'inscrire</button>
+      </form>
+
+      <div class="login-link">
+          <p>Déjà inscrit ? <a href="{{ url_for('connexion_011737') }}">Connectez-vous</a></p>
+      </div>
+  </div>
+
+  <script>
+      function validatePassword() {
+          const password = document.getElementById('password').value;
+          if (password.length < 8) {
+              alert("Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.");
+              return false; // Empêche la soumission du formulaire
+          }
+          return true; // Permet la soumission du formulaire
+      }
+  </script>
 </body>
 </html>

@@ -34,11 +34,21 @@ body {
 
 
 
-a {
+.logo a {
     text-decoration: none;
-    color: inherit;
-}
-
+    color: #333;
+    font-family: 'Poppins', sans-serif;
+    font-size: 36px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    background: linear-gradient(45deg, #6a11cb, #2575fc);
+    
+    color: transparent;
+    -webkit-background-clip: text;
+    padding: 5px 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
 header {
     position: relative;
     height: 80vh; /* Hauteur du header */
@@ -56,7 +66,7 @@ header:before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6); /* Couche noire avec opacité */
+    background: rgba(0, 0, 0, 0.3); /* Couche noire avec opacité */
     z-index: 1; /* Derrière la section hero */
 }
 
@@ -239,6 +249,7 @@ main {
     font-size: 1.2em; /* Taille du texte du lien */
     font-weight: bold;
     color: #ff8c00;
+    text-decoration: none;
 }
 
 
@@ -765,3 +776,34 @@ main {
 .contact-form form button:hover {
     background-color: #e57700;
 }
+
+    /* Animation d'apparition des lettres */
+    @keyframes letter-appear {
+        from { 
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to { 
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .hero h1 {
+        display: inline-block;
+    }
+    
+    .hero h1 span {
+        display: inline-block;
+        opacity: 0;
+        animation: letter-appear 0.4s forwards;
+    }
+    
+    /* Style spécifique pour les espaces */
+    .hero h1 .space {
+        display: inline;
+        animation: none;
+        opacity: 1;
+        width: 0.3em;
+    }
+ 

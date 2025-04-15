@@ -3,320 +3,569 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gérer les Lieux - Assistant Virtuel</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Gérer les Lieux - Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Réinitialisation du style de base */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+        :root {
+            --primary-50: #f0f9ff;
+            --primary-100: #e0f2fe;
+            --primary-200: #bae6fd;
+            --primary-300: #7dd3fc;
+            --primary-400: #38bdf8;
+            --primary-500: #0ea5e9;
+            --primary-600: #0284c7;
+            --primary-700: #0369a1;
+            --primary-800: #075985;
+            --primary-900: #0c4a6e;
+            
+            --secondary-50: #f8fafc;
+            --secondary-100: #f1f5f9;
+            --secondary-200: #e2e8f0;
+            --secondary-300: #cbd5e1;
+            --secondary-400: #94a3b8;
+            --secondary-500: #64748b;
+            --secondary-600: #475569;
+            --secondary-700: #334155;
+            --secondary-800: #1e293b;
+            --secondary-900: #0f172a;
+            
+            --success-500: #10b981;
+            --info-500: #3b82f6;
+            --warning-500: #f59e0b;
+            --error-500: #ef4444;
+            
+            --sidebar-bg: linear-gradient(160deg, var(--secondary-800) 0%, var(--secondary-900) 100%);
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --header-bg: rgba(255, 255, 255, 0.9);
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --border-radius: 12px;
+        }
 
-/* Fixer le corps de la page */
-body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f3f4f7;
-    display: flex;
-    height: 100vh;
-    overflow: hidden; /* Empêche le défilement global de la page */
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-/* Sidebar */
-.sidebar {
-    width: 260px;
-    background: linear-gradient(135deg, #6a5bff, #4e4a94);
-    color: white;
-    position: fixed;
-    height: 100%;
-    padding: 20px;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-y: auto; /* Permet à la sidebar de défiler si le contenu est trop long */
-}
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--secondary-100);
+            color: var(--secondary-800);
+            display: flex;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
 
-/* Sidebar */
-.sidebar {
-    width: 260px;
-    background: linear-gradient(135deg, #6a5bff, #4e4a94);
-    color: white;
-    position: fixed;
-    height: 100%;
-    padding: 20px;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
 
-.admin-info {
-    margin-bottom: 30px;
-    text-align: center;
-}
+        /* Sidebar - Design Premium */
+        .sidebar {
+            width: 300px;
+            background: var(--sidebar-bg);
+            height: 100vh;
+            position: fixed;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            z-index: 20;
+            transition: var(--transition-slow);
+            box-shadow: var(--shadow-xl);
+            border-right: none;
+        }
 
-.admin-info img {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    margin-bottom: 15px;
-    border: 3px solid #fff;
-}
+        .admin-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem 0;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
 
-.admin-info p {
-    font-size: 16px;
-    font-weight: bold;
-}
+        .admin-info::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        }
 
-.sidebar ul {
-    list-style: none;
-    width: 100%;
-    margin-top: 20px;
-}
+        .admin-info img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1.25rem;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+            transition: var(--transition-slow);
+            filter: grayscale(10%);
+        }
 
-.sidebar ul li {
-    width: 100%;
-    padding: 15px;
-    text-align: left;
-    border-radius: 5px;
-    transition: 0.3s;
-}
+        .admin-info:hover img {
+            transform: scale(1.05);
+            border-color: var(--primary-400);
+            filter: grayscale(0%);
+        }
 
-.sidebar ul li a {
-    text-decoration: none;
-    color: white;
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-}
+        .admin-info p {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.25rem;
+            letter-spacing: 0.5px;
+        }
 
-.sidebar ul li a i {
-    margin-right: 10px;
-}
+        .admin-info span {
+            font-size: 0.85rem;
+            color: var(--primary-300);
+            font-weight: 500;
+            background: rgba(14, 165, 233, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            margin-top: 0.5rem;
+        }
 
-.sidebar ul li:hover {
-    background: #5d53cb;
-    cursor: pointer;
-    transform: scale(1.05);
-}
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
 
-/* Contenu principal */
-.main-content {
-    margin-left: 260px;
-    padding: 22px;
-    width: calc(100% - 260px);
-    background-color: #f4f7fa;
-    overflow-y: auto; /* Permet au contenu principal de défiler s'il est trop long */
-    height: 100vh; /* Fixer la hauteur du contenu principal */
-}
+        .sidebar ul {
+            list-style: none;
+            width: 100%;
+        }
 
-.dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: white;
-    padding: 20px 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
+        .sidebar ul li {
+            margin-bottom: 0.4rem;
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+        }
 
-.dashboard-header h1 {
-    font-size: 24px;
-    color: #333;
-}
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            padding: 0.85rem 1.25rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            color: rgba(255, 255, 255, 0.8);
+            position: relative;
+            z-index: 1;
+        }
 
-.dashboard-header button {
-    padding: 10px 20px;
-    background-color: #6a5bff;
-    border: none;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
-}
+        .sidebar ul li a i {
+            width: 24px;
+            margin-right: 12px;
+            text-align: center;
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
 
-.dashboard-header button:hover {
-    background-color: #4e4a94;
-}
+        .sidebar ul li a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: var(--transition-slow);
+            z-index: -1;
+        }
 
-.section {
-    background: white;
-    padding: 30px;
-    margin-top: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    animation: fadeIn 0.5s ease-in-out;
-}
+        .sidebar ul li:hover a {
+            color: white;
+            transform: translateX(5px);
+        }
 
-.section h2 {
-    color: #333;
-    font-size: 22px;
-    margin-bottom: 20px;
-}
+        .sidebar ul li:hover a::before {
+            left: 100%;
+        }
 
-/* Amélioration du tableau */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
+        
 
-table th, table td {
-    padding: 15px;
-    text-align: left;
-    font-size: 16px;
-    border: 1px solid #ddd; /* Ajout de bordures aux cellules */
-}
+        .sidebar ul li.active a i {
+            color: var(--primary-400);
+        }
 
-table th {
-    background-color: #f8f8f8;
-    color: #555;
-    font-weight: bold;
-}
-/* Enlever le soulignement des liens */
-a {
-    text-decoration: none;
-}
+        /* Main Content - Design Premium */
+        .main-content {
+            margin-left: 300px;
+            padding: 0;
+            width: calc(100% - 300px);
+            transition: var(--transition);
+        }
 
-table td {
-    background-color: white;
-}
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background: var(--header-bg);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
 
-table tr:nth-child(even) {
-    background-color: #f9f9f9; /* Ligne paire légèrement différente */
-}
+        .dashboard-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary-800);
+            position: relative;
+            display: inline-block;
+        }
 
-/* Style des boutons dans la cellule */
-table td .btn-container {
-    display: flex;  /* Utilisation du flexbox pour aligner les boutons côte à côte */
-    gap: 10px;  /* Ajout d'un espace entre les boutons */
-    justify-content: start; /* Aligner les boutons à gauche */
-}
+        .dashboard-header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--primary-500);
+            border-radius: 2px;
+            transition: var(--transition);
+        }
 
-/* Style du bouton Modifier */
-.btn-modify {
-    background-color: #6a5bff;
-    color: white;
-    padding: 10px 20px;
-    font-size: 14px;
-    border-radius: 5px;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(255, 165, 0, 0.3); /* Ombre douce */
-    transition: background-color 0.3s, transform 0.3s;
-}
+        .dashboard-header h1:hover::after {
+            width: 100%;
+            background: linear-gradient(90deg, var(--primary-500), var(--primary-300));
+        }
 
-.btn-modify:hover {
-    background-color: #4e4a94; /* Changer la couleur au survol */
-    box-shadow: 0 4px 12px rgba(255, 165, 0, 0.5); /* Ombre plus forte */
-    transform: translateY(-2px); /* Légère élévation au survol */
-}
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
 
-/* Style du bouton Supprimer */
-.btn-delete {
-    background-color: #f44336;
-    color: white;
-    padding: 10px 20px;
-    font-size: 14px;
-    border-radius: 5px;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3); /* Ombre douce */
-    transition: background-color 0.3s, transform 0.3s;
-}
+        .logout-btn {
+            padding: 0.7rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-400) 100%);
+            border: none;
+            color: white;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
 
-.btn-delete:hover {
-    background-color: #f44336;
-    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.5); /* Ombre plus forte */
-    transform: translateY(-2px); /* Légère élévation au survol */
-}
+        .logout-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: var(--transition-slow);
+        }
 
-/* Bouton Ajouter */
-.btn-add {
-    background-color: #6a5bff;
-    color: white;
-    margin: 20px 0;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
 
-.btn-add:hover {
-    background-color: #4e4a94;
-}
+        .logout-btn:hover::before {
+            left: 100%;
+        }
 
-/* Message si le tableau est vide */
-.no-data {
-    text-align: center;
-    font-size: 18px;
-    color: #777;
-    padding: 20px;
-}
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 2rem;
+        }
 
-/* Animation pour les sections */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+        /* Table Style - Version compacte */
+        .places-table-container {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
 
-/* Pied de page */
-.footer {
-    text-align: center;
-    padding: 15px;
-    background: linear-gradient(135deg, #6a5bff, #4e4a94);
-    color: white;
-    border-radius: 10px;
-    margin-top: 30px;
-}
+        .places-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
 
+        .places-table thead th {
+            background-color: var(--primary-50);
+            color: var(--primary-700);
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 2px solid var(--primary-100);
+        }
+
+        .places-table tbody tr {
+            transition: var(--transition);
+            border-bottom: 1px solid var(--secondary-100);
+        }
+
+        .places-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .places-table tbody tr:hover {
+            background-color: var(--primary-50);
+        }
+
+        .places-table td {
+            padding: 0.75rem 1rem;
+            vertical-align: middle;
+        }
+
+        .place-id {
+            color: var(--secondary-600);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .place-name {
+            font-weight: 600;
+            color: var(--secondary-800);
+            font-size: 0.95rem;
+        }
+
+        .place-type {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--info-500);
+        }
+
+        .place-coords {
+            color: var(--secondary-500);
+            font-size: 0.85rem;
+        }
+
+        .place-desc {
+            color: var(--secondary-600);
+            font-size: 0.9rem;
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .edit-btn {
+            background-color: var(--primary-500);
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: var(--error-500);
+            color: white;
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-400) 100%);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow);
+            font-size: 0.9rem;
+        }
+
+        .action-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .no-places {
+            text-align: center;
+            padding: 2rem;
+            color: var(--secondary-500);
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            color: var(--secondary-500);
+            font-size: 0.85rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+                padding: 1.5rem 0.5rem;
+                align-items: center;
+            }
+            
+            .admin-info img {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .admin-info p, .admin-info span {
+                display: none;
+            }
+            
+            .sidebar ul li a {
+                justify-content: center;
+                padding: 0.85rem 0;
+            }
+            
+            .sidebar ul li a span {
+                display: none;
+            }
+            
+            .sidebar ul li a i {
+                margin-right: 0;
+                font-size: 1.25rem;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+                width: calc(100% - 80px);
+            }
+        }
     </style>
 </head>
 <body>
-
     <div class="sidebar">
         <div class="admin-info">
             <img src="{{ url_for('static', filename='image/vhh.jpg') }}" alt="Admin Profile">
-            <p><strong>Admin</strong></p>
+            <p>Administrateur</p>
+            <span>Admin</span>
         </div>
-        <ul>
-            <li><a href="{{ url_for('admin') }}"><i class="fas fa-home"></i> Tableau de bord</a></li>
-            <li><a href="{{ url_for('user') }}"><i class="fas fa-users"></i> Gérer les utilisateurs</a></li>
-            <li><a href="{{ url_for('lieux') }}"><i class="fas fa-map-marker-alt"></i> Gérer les lieux</a></li>
-            <li><a href="{{ url_for('docs') }}"><i class="fas fa-file"></i> Gérer les documents</a></li>
-            <li><a href="{{ url_for('deconnexion') }}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
-        </ul>
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="{{ url_for('admin') }}">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('user') }}">
+                        <i class="fas fa-users"></i>
+                        <span>Utilisateurs</span>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="{{ url_for('lieux') }}">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <span>Lieux</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('docs') }}">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Documents</span>
+                    </a>
+                </li>
+            </ul>
+            <ul>
+                <li class="active">
+                    <a href="{{ url_for('admin_messages') }}">
+                        <i class="fas fa-envelope"></i> 
+                        <span>Messages</span>
+                    </a>
+                </li>
+            </ul>
+            <ul>
+                <li>
+                    <a href="{{ url_for('deconnexion') }}">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Déconnexion</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
 
     <div class="main-content">
-        <div class="dashboard-header">
-            <h1>Gérer les Lieux</h1>
-            <a href="{{ url_for('deconnexion') }}"><button>Déconnexion</button></a>
-        </div>
+        <header class="dashboard-header">
+            <h1>Gestion des Lieux</h1>
+            <div class="header-actions">
+                <button class="logout-btn" onclick="window.location.href='{{ url_for('deconnexion') }}'">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Déconnexion
+                </button>
+            </div>
+        </header>
 
-        <div class="section">
-            <h2>Liste des Lieux</h2>
-            <a href="{{ url_for('ajouter_lieu') }}"><button class="btn-add">Ajouter un lieu</button></a>
-
-            <!-- Vérifier si la liste des lieux est vide -->
-            {% if lieux|length == 0 %}
-                <div class="no-data">Aucun lieu n'a été ajouté.</div>
-            {% else %}
-                <table>
+        <main class="dashboard-content">
+            <div class="places-table-container">
+                <a href="{{ url_for('ajouter_lieu') }}" class="add-btn">
+                    <i class="fas fa-plus"></i> Ajouter un lieu
+                </a>
+                <h2>Liste des lieux</h2>
+                
+                {% if lieux %}
+                <table class="places-table">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Nom du lieu</th>
+                            <th>Nom</th>
                             <th>Type</th>
-                            <th>Latitude</th>
-                            <th>Longitude</th>
+                            <th>Coordonnées</th>
                             <th>Description</th>
                             <th>Actions</th>
                         </tr>
@@ -324,29 +573,44 @@ table td .btn-container {
                     <tbody>
                         {% for lieu in lieux %}
                         <tr>
-                            <td>{{ lieu.id_lieu }}</td>
-                            <td>{{ lieu.nom_lieu }}</td>
-                            <td>{{ lieu.type_lieu }}</td>
-                            <td>{{ lieu.latitude }}</td>
-                            <td>{{ lieu.longitude }}</td>
-                            <td>{{ lieu.description }}</td>
+                            <td class="place-id">{{ lieu.id_lieu }}</td>
+                            <td class="place-name">{{ lieu.nom_lieu }}</td>
+                            <td><span class="place-type">{{ lieu.type_lieu }}</span></td>
+                            <td class="place-coords">
+                                <div>Lat: {{ lieu.latitude }}</div>
+                                <div>Lng: {{ lieu.longitude }}</div>
+                            </td>
+                            <td class="place-desc" title="{{ lieu.description }}">{{ lieu.description }}</td>
                             <td>
-                                <div class="btn-container">
-                                    <a href="{{ url_for('modifier_lieu', index=lieu.id_lieu) }}" class="btn-modify">Modifier</a>
-                                    <a href="{{ url_for('supprimer_lieu', index=lieu.id_lieu) }}" class="btn-delete">Supprimer</a>
+                                <div class="action-buttons">
+                                    <a href="{{ url_for('modifier_lieu', index=lieu.id_lieu) }}" class="action-btn edit-btn">
+                                        <i class="fas fa-edit"></i> Modifier
+                                    </a>
+                                    <button class="action-btn delete-btn" onclick="confirmDelete('{{ lieu.nom_lieu }}', '{{ url_for('supprimer_lieu', index=lieu.id_lieu) }}')">
+                                        <i class="fas fa-trash"></i> Supprimer
+                                    </button>
                                 </div>
                             </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-            {% endif %}
-        </div>
+                {% else %}
+                    <div class="no-places">
+                        <p>Aucun lieu enregistré pour le moment.</p>
+                    </div>
+                {% endif %}
+            </div>
 
-        <div class="footer">
-            &copy; 2025 Assistant Virtuel - Tous droits réservés.
-        </div>
+        </main>
     </div>
 
+    <script>
+        function confirmDelete(placeName, deleteUrl) {
+            if (confirm("Êtes-vous sûr de vouloir supprimer le lieu '" + placeName + "' ?")) {
+                window.location.href = deleteUrl;
+            }
+        }
+    </script>
 </body>
 </html>

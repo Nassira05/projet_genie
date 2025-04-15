@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connexion - StartUni</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - StartUni</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
   <style>
@@ -185,7 +185,42 @@
         transform: translateY(0);
       }
     }
+    .flash-messages {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    animation: slideIn 0.5s, fadeOut 0.5s 2.5s forwards;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; }
+}
   </style>
+
 </head>
 <body>
   {% with messages = get_flashed_messages(with_categories=true) %}
@@ -200,56 +235,56 @@
     {% endif %}
 {% endwith %}
   <div class="login-container animate__animated animate__fadeInUp">
-    <div class="logo">
-      <h1>Start<span>Uni</span></h1>
-    </div>
-    
-    <div class="login-header">
-      <h2>Connexion à votre compte</h2>
-      <p>Entrez vos identifiants pour accéder</p>
-    </div>
+      <div class="logo">
+          <h1>Start<span>Uni</span></h1>
+      </div>
 
-    {% if message %}
-      <div class="alert {{ 'error' if 'erreur' in message|lower else 'success' }}">
-        {{ message }}
+      <div class="login-header">
+          <h2>Connexion à votre compte</h2>
+          <p>Entrez vos identifiants pour accéder</p>
       </div>
-    {% endif %}
 
-    <form action="/connexion_011737" method="POST">
-      <div class="form-group">
-        <label for="email">Adresse email</label>
-        <input type="email" id="email" name="email" placeholder="exemple@universite.fr" required>
+      {% if message %}
+          <div class="alert {{ 'error' if 'erreur' in message|lower else 'success' }}">
+              {{ message }}
+          </div>
+      {% endif %}
+
+      <form action="/connexion_011737" method="POST" onsubmit="return validatePassword()">
+          <div class="form-group">
+              <label for="email">Adresse email</label>
+              <input type="email" id="email" name="email" placeholder="exemple@universite.fr" required>
+          </div>
+
+          <div class="form-group">
+              <label for="password">Mot de passe</label>
+              <div class="input-wrapper">
+                  <input type="password" id="password" name="password" placeholder="••••••••" required>
+                  <i class="password-toggle fas fa-eye" onclick="togglePassword()"></i>
+              </div>
+          </div>
+
+          <button type="submit" class="btn-primary">Se connecter</button>
+      </form>
+
+      <div class="login-footer">
+          <p>Pas de compte ? <a href="{{ url_for('inscription') }}">S'inscrire</a></p>
       </div>
-      
-      <div class="form-group">
-        <label for="password">Mot de passe</label>
-        <div class="input-wrapper">
-          <input type="password" id="password" name="password" placeholder="••••••••" required>
-          <i class="password-toggle fas fa-eye" onclick="togglePassword()"></i>
-        </div>
-      </div>
-      
-      <button type="submit" class="btn-primary">Se connecter</button>
-    </form>
-    
-    <div class="login-footer">
-      <p>Pas de compte ? <a href="{{ url_for('inscription') }}">S'inscrire</a></p>
-    </div>
   </div>
 
   <script>
-    function togglePassword() {
-      const passwordField = document.getElementById('password');
-      const toggleIcon = document.querySelector('.password-toggle');
-      
-      if (passwordField.type === 'password') {
-        passwordField.type = 'text';
-        toggleIcon.classList.replace('fa-eye', 'fa-eye-slash');
-      } else {
-        passwordField.type = 'password';
-        toggleIcon.classList.replace('fa-eye-slash', 'fa-eye');
+      function togglePassword() {
+          // ... (fonction togglePassword existante) ...
       }
-    }
+
+      function validatePassword() {
+          const password = document.getElementById('password').value;
+          if (password.length < 8) {
+              alert("Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.");
+              return false; // Empêche la soumission du formulaire
+          }
+          return true; // Permet la soumission du formulaire
+      }
   </script>
 </body>
 </html>

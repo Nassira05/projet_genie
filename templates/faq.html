@@ -38,23 +38,23 @@
             border-radius: 30px;
             font-size: 1rem;
             outline: none;
-          
             transition: all 0.3s ease, box-shadow 0.3s ease;
         }
         
         #faq-search:focus {
             border-color: #6a11cb;
         }
+
         /* Mise en surbrillance des résultats */
-/* Amélioration de la surbrillance */
-mark {
-    background-color: #FFD700; /* Jaune plus vif */
-    color: #000; /* Texte en noir pour meilleur contraste */
-    padding: 0 3px;
-    border-radius: 3px;
-    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
-    font-weight: bold;
-}
+        mark {
+            background-color: #FFD700;
+            color: #000;
+            padding: 0 3px;
+            border-radius: 3px;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            font-weight: bold;
+        }
+
         .faq-tabs {
             display: flex;
             gap: 10px;
@@ -77,51 +77,41 @@ mark {
         }
         
         .load-more-btn {
-    display: none; /* Caché par défaut */
-    margin: 30px auto 0;
-    padding: 12px 25px;
-    background: white;
-    border: 2px solid #6a11cb;
-    border-radius: 30px;
-    color: #6a11cb;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-}
+            display: none;
+            margin: 30px auto 0;
+            padding: 12px 25px;
+            background: white;
+            border: 2px solid #6a11cb;
+            border-radius: 30px;
+            color: #6a11cb;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
 
-.load-more-btn:hover {
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
+        .load-more-btn:hover {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
 
-.load-more-btn:active {
-    transform: translateY(0);
-}
+        .load-more-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            border-color: #ccc;
+            color: #666;
+            background: white;
+        }
 
-/* Bouton "Voir plus" désactivé */
-.load-more-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    border-color: #ccc;
-    color: #666;
-    background: white;
-}
-
-.load-more-btn:disabled:hover {
-    background: white;
-    transform: none;
-    box-shadow: none;
-}
-.faq-item[style*="display: none"] {
-    opacity: 0;
-    height: 0;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-}  
-        /* Reste de votre CSS existant conservé */
+        .faq-item[style*="display: none"] {
+            opacity: 0;
+            height: 0;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }  
+        
         .faq-container h2 {
             text-align: center;
             margin-bottom: 30px;
@@ -148,10 +138,8 @@ mark {
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-           
-    transition: all 0.3s ease, display 0.3s ease;
-}
-        
+            transition: all 0.3s ease, display 0.3s ease;
+        }
         
         .faq-item:hover {
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -206,8 +194,7 @@ mark {
             color: white;
             transform: rotate(180deg);
         }
-   
-        /* TOUT VOTRE CSS EXISTANT RESTE INCHANGÉ */
+        
         .notification-badge {
             display: inline-block;
             background-color: #e74c3c;
@@ -228,7 +215,7 @@ mark {
             100% { transform: scale(1); }
         }
 
-        /* AJOUTS UNIQUEMENT POUR LE RESPONSIVE ET LE MENU HAMBURGER */
+        /* Mobile Menu Styles */
         .menu-toggle {
             display: none;
             cursor: pointer;
@@ -239,7 +226,6 @@ mark {
         }
 
         @media (max-width: 768px) {
-            /* Style du menu hamburger (identique à la page précédente) */
             .menu-toggle {
                 display: block;
             }
@@ -284,54 +270,84 @@ mark {
                 display: block;
             }
 
-            /* Ajustements minimaux pour le contenu FAQ */
+            /* Responsive adjustments for FAQ */
             .faq-container {
-                margin: 20px 10px;
                 padding: 20px;
+                margin: 20px auto;
             }
             
             .faq-controls {
                 flex-direction: column;
+                gap: 15px;
+            }
+            
+            .faq-search {
+                min-width: auto;
             }
             
             .faq-tabs {
                 justify-content: center;
             }
             
-            .hero h1 {
-                font-size: 2rem;
+            .tab-btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
             }
             
-            .hero p {
-                font-size: 1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
             .faq-container h2 {
                 font-size: 1.8rem;
             }
             
+            .faq-question {
+                padding: 15px;
+                font-size: 1rem;
+            }
+            
+            .faq-answer-content {
+                padding: 15px 0;
+            }
+        }
+
+        /* Small mobile adjustments */
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .faq-container h2 {
+                font-size: 1.5rem;
+            }
+            
             .tab-btn {
-                padding: 8px 12px;
-                font-size: 0.9rem;
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            
+            #faq-search {
+                padding: 10px 15px;
             }
         }
         @media (max-width: 768px) {
-    .dropdown > a.dropdown-toggle {
-        pointer-events: none; /* Désactive le clic sur mobile */
+    .hero h1 {
+        font-size: 1.8rem;
+        line-height: 1.3;
     }
     
-    .dropdown.active > a.dropdown-toggle {
-        pointer-events: auto; /* Réactive le clic quand le dropdown est ouvert */
-    }
-    
-    .dropdown-menu li a {
-        padding: 12px 20px;
-        display: block;
+    .hero p {
+        font-size: 1rem;
     }
 }
-        /* Votre CSS existant pour header, chatbot et footer */
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 1.5rem;
+    }
+    
+    .hero p {
+        font-size: 0.9rem;
+    }
+}
+    
     </style>
 </head>
 <body>
@@ -340,15 +356,12 @@ mark {
             <div class="logo">
                 <a href="#">StartUni</a>
             </div>
-            <!-- AJOUT DU BOUTON HAMBURGER -->
-            <div class="menu-toggle" id="mobile-menu">
-                <i class='bx bx-menu'></i>
-            </div>
-            <ul class="menu" id="main-menu">
+            <div class="menu-toggle">☰</div>
+            <ul class="menu">
                 <li><a href="{{ url_for('page_acceuil') }}">Accueil</a></li>
-                <li><a href="#">Orientation</a></li>
+                <li><a href="{{ url_for('carte') }}">Orientation</a></li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle">Support Administratif <i class='bx bx-chevron-down'></i></a>
+                    <a href="#">Support Administratif</a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for('renseignement') }}">Renseignement sur les filières</a></li>
                         <li><a href="{{ url_for('page_inscription') }}">Étapes de l'inscription</a></li>
@@ -367,7 +380,7 @@ mark {
                     <a href="{{ url_for('guide_academique') }}">Guide Académique</a>
                 </li>
                 <li><a href="{{ url_for('faq') }}">FAQ</a></li>
-                <li><a href="#">Contact</a></li>
+                
             </ul>
         </nav>
         <div class="hero">
@@ -375,9 +388,11 @@ mark {
             <p>Trouvez rapidement des réponses à vos questions les plus fréquentes sur nos services universitaires.</p>
         </div>
     </header>
+
     <section class="faq-container">
         <h2>Questions Fréquentes</h2>
         
+        <!-- Contrôles de recherche et filtres -->
         <div class="faq-controls">
             <div class="faq-search">
                 <input type="text" id="faq-search" placeholder="🔍 Rechercher une question...">
@@ -390,183 +405,30 @@ mark {
                 <button class="tab-btn" data-category="aides">Aides universitaires</button>
                 <button class="tab-btn" data-category="documents">Documents</button>
             </div>
-        </div>        
-       <!-- Dans la section FAQ, après les contrôles de recherche -->
-<div class="faq-list">
-    <!-- Catégorie Inscription -->
-    <div class="faq-item" data-category="inscription">
-        <div class="faq-question">
-            <span>Quelles sont les étapes et dates clés pour l'inscription ?</span>
-            <i class='bx bx-chevron-down'></i>
         </div>
-        <div class="faq-answer">
-            <div class="faq-answer-content">
-                <h3>Calendrier d'inscription 2025</h3>
-                <ol>
-                    <li><strong>Préinscriptions en ligne :</strong> Jusqu'au 8 septembre 2025 sur <a href="https://ecampus.univ.edu.dj" target="_blank">eCampus</a></li>
-                    <li><strong>Concours d'entrée :</strong> 10-12 septembre 2025 (Médecine, Ingénierie, BBA)</li>
-                    <li><strong>Inscription administrative :</strong> 5-20 septembre 2025 sur le campus de Balbala</li>
-                    <li><strong>Résultats 1ère commission :</strong> 17 septembre 2025</li>
-                    <li><strong>Modification des vœux :</strong> 18-20 septembre 2025</li>
-                    <li><strong>Résultats finaux :</strong> 21 septembre 2025</li>
-                </ol>
-            </div>
-        </div>
-    </div>
-
-    <div class="faq-item" data-category="inscription">
-        <div class="faq-question">
-            <span>Comment faire ma préinscription en ligne ?</span>
-            <i class='bx bx-chevron-down'></i>
-        </div>
-        <div class="faq-answer">
-            <div class="faq-answer-content">
-                <h3>Tutoriel de préinscription</h3>
-                <ol>
-                    <li>Connectez-vous sur <a href="https://ecampus.univ.edu.dj" target="_blank">eCampus</a></li>
-                    <li>Identifiants : 
-                        <ul>
-                            <li>Nom d'utilisateur : Votre numéro de bac</li>
-                            <li>Mot de passe : Votre matricule lycéen</li>
-                        </ul>
-                    </li>
-                    <li>Menu : Libre Service → Saisie des vœux</li>
-                    <li>Classer vos 20 choix par ordre de préférence</li>
-                    <li>Cocher les cases pour les concours (si concerné)</li>
-                    <li>Enregistrer avant le 8 septembre 2025</li>
-                </ol>
-                <p><em>Astuce :</em> Vous pouvez modifier vos choix jusqu'à la date limite.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="faq-item" data-category="inscription">
-        <div class="faq-question">
-            <span>Quels documents fournir pour l'inscription administrative ?</span>
-            <i class='bx bx-chevron-down'></i>
-        </div>
-        <div class="faq-answer">
-            <div class="faq-answer-content">
-                <h3>Dossier à compléter</h3>
-                <ul>
-                    <li>Photocopie de pièce d'identité ou extrait de naissance</li>
-                    <li>Photocopie du diplôme de baccalauréat</li>
-                    <li>Photocopie du relevé de notes du bac</li>
-                    <li>4 photos d'identité récentes</li>
-                    <li>Reçu de paiement des droits (25 000 FDJ)</li>
-                </ul>
-                <p><strong>Lieu :</strong> Campus de Balbala (5-20 septembre 2025)</p>
-                <p><strong>À noter :</strong> Le dossier est à retirer et remplir sur place.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Catégorie Renseignement -->
-    <div class="faq-item" data-category="renseignement">
-        <div class="faq-question">
-            <span>Quelles sont les filières avec concours d'entrée ?</span>
-            <i class='bx bx-chevron-down'></i>
-        </div>
-        <div class="faq-answer">
-            <div class="faq-answer-content">
-                <h3>Filières sous concours</h3>
-                <table>
-                    <tr>
-                        <th>Filière</th>
-                        <th>Épreuves</th>
-                        <th>Durée</th>
-                    </tr>
-                    <tr>
-                        <td>Médecine</td>
-                        <td>Français, Chimie, SVT</td>
-                        <td>5 ans</td>
-                    </tr>
-                    <tr>
-                        <td>Ingénierie</td>
-                        <td>Anglais, Maths, Physique</td>
-                        <td>5 ans</td>
-                    </tr>
-                    <tr>
-                        <td>BBA</td>
-                        <td>Anglais, Maths & Logique, Français</td>
-                        <td>3 ans</td>
-                    </tr>
-                </table>
-                <p><strong>Dates concours :</strong> 10-12 septembre 2025</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="faq-item" data-category="renseignement">
-        <div class="faq-question">
-            <span>Quelles sont les facultés et filières disponibles ?</span>
-            <i class='bx bx-chevron-down'></i>
-        </div>
-        <div class="faq-answer">
-            <div class="faq-answer-content">
-                <h3>Offre de formation</h3>
-                
-                <div class="faculty-section">
-                    <h4>Faculté de Droit et d'Économie</h4>
-                    <ul>
-                        <li><strong>DGE</strong> - Droit et Gestion des Entreprises (L1-L3)</li>
-                        <li><strong>Droit</strong> - Fondements juridiques (L1-L3)</li>
-                        <li><strong>EG</strong> - Économie et Gestion (L1-L3)</li>
-                        <li><strong>BBA</strong> - Bachelor in Business Administration (Concours)</li>
-                    </ul>
+        
+        <!-- Liste des questions -->
+        <div class="faq-list">
+            <!-- Catégorie Inscription -->
+            <div class="faq-item" data-category="inscription">
+                <div class="faq-question">
+                    <span>Quelles sont les étapes et dates clés pour l'inscription ?</span>
+                    <i class='bx bx-chevron-down'></i>
                 </div>
-
-                <div class="faculty-section">
-                    <h4>Faculté des Sciences</h4>
-                    <ul>
-                        <li><strong>Informatique</strong> (L1-L3)</li>
-                        <li><strong>Mathématiques</strong> (L1-L3)</li>
-                        <li><strong>Biologie</strong> (L2: Biochimie/Géologie, L3: Spécialisations)</li>
-                        <li><strong>Physique-Chimie</strong> (L3: Physique ou Chimie)</li>
-                    </ul>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <h3>Calendrier d'inscription 2025</h3>
+                        <ol>
+                            <li><strong>Préinscriptions en ligne :</strong> Jusqu'au 8 septembre 2025 sur <a href="https://ecampus.univ.edu.dj" target="_blank">eCampus</a></li>
+                            <li><strong>Concours d'entrée :</strong> 10-12 septembre 2025 (Médecine, Ingénierie, BBA)</li>
+                            <li><strong>Inscription administrative :</strong> 5-20 septembre 2025 sur le campus de Balbala</li>
+                            <li><strong>Résultats 1ère commission :</strong> 17 septembre 2025</li>
+                            <li><strong>Modification des vœux :</strong> 18-20 septembre 2025</li>
+                            <li><strong>Résultats finaux :</strong> 21 septembre 2025</li>
+                        </ol>
+                    </div>
                 </div>
-
-                <div class="faculty-section">
-                    <h4>IUT Tertiaire</h4>
-                    <ul>
-                        <li><strong>GEA</strong> - Gestion des Entreprises</li>
-                        <li><strong>GLT</strong> - Gestion Logistique et Transport</li>
-                        <li><strong>COTM</strong> - Techniques de Commercialisation</li>
-                        <li><strong>GCA</strong> - Gestion Comptable en Arabe</li>
-                    </ul>
-                </div>
-
-                <p><em>Note :</em> Consultez le guide des formations pour les détails complets.</p>
             </div>
-        </div>
-    </div>
-
-    <div class="faq-item" data-category="renseignement">
-        <div class="faq-question">
-            <span>Comment choisir ma filière ?</span>
-            <i class='bx bx-chevron-down'></i>
-        </div>
-        <div class="faq-answer">
-            <div class="faq-answer-content">
-                <h3>Conseils d'orientation</h3>
-                <ol>
-                    <li><strong>Évaluez vos compétences :</strong> Privilégiez les domaines où vous excellez</li>
-                    <li><strong>Considérez les débouchés :</strong> Certaines filières offrent plus d'opportunités</li>
-                    <li><strong>Types de formation :</strong>
-                        <ul>
-                            <li><em>Licences académiques</em> (3 ans) : Théoriques</li>
-                            <li><em>Formations professionnelles</em> (IUT) : Plus pratiques</li>
-                            <li><em>Filières longues</em> (Médecine/Ingénierie) : 5 ans d'études</li>
-                        </ul>
-                    </li>
-                    <li><strong>Classement des vœux :</strong> Ordonnez 20 choix sur eCampus</li>
-                </ol>
-                <p><strong>Service d'aide :</strong> Rencontrez nos conseillers d'orientation du 1er au 5 septembre.</p>
-            </div>
-        </div>
-    </div>
-</div>
-</div>     
            
  
 
@@ -1017,7 +879,6 @@ mark {
 <button class="load-more-btn">Afficher plus de questions</button>
 </section>
 
-<!-- CHATBOT ET FOOTER - IDENTIQUES -->
 <div class="chatbot-container">
     <a href="{{ url_for('chatbox') }}">
         <button class="chatbot-button">💬</button>
@@ -1038,36 +899,36 @@ mark {
 </footer>
 
 <script>
-    /* SCRIPT POUR LE MENU HAMBURGER (IDENTIQUE À LA PAGE PRÉCÉDENTE) */
-    document.getElementById('mobile-menu').addEventListener('click', function() {
-        document.getElementById('main-menu').classList.toggle('active');
-    });
-
-    const dropdowns = document.querySelectorAll('.dropdown');
-    dropdowns.forEach(dropdown => {
-        dropdown.addEventListener('click', function(e) {
-            if (window.innerWidth <= 768) {
-                e.preventDefault();
-                this.classList.toggle('active');
+    // Mobile menu toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.querySelector('.menu-toggle');
+        const menu = document.querySelector('.menu');
+        const dropdowns = document.querySelectorAll('.dropdown');
+        
+        menuToggle.addEventListener('click', function() {
+            menu.classList.toggle('active');
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!menu.contains(e.target) && e.target !== menuToggle) {
+                menu.classList.remove('active');
             }
         });
-    });
+        
+        // Dropdown functionality for mobile
+        dropdowns.forEach(dropdown => {
+            const link = dropdown.querySelector('a');
+            
+            link.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    dropdown.classList.toggle('active');
+                }
+            });
+        });
 
-    document.addEventListener('click', function(e) {
-        if (window.innerWidth <= 768) {
-            const menu = document.getElementById('main-menu');
-            const mobileMenuBtn = document.getElementById('mobile-menu');
-            if (!menu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
-                menu.classList.remove('active');
-                dropdowns.forEach(dropdown => {
-                    dropdown.classList.remove('active');
-                });
-            }
-        }
-    });
-
-    /* VOTRE SCRIPT EXISTANT POUR LA FAQ - JE NE MODIFIE RIEN */
-    document.addEventListener('DOMContentLoaded', function() {
+        // FAQ functionality (same as original)
         const allFaqItems = document.querySelectorAll('.faq-item');
         const loadMoreBtn = document.querySelector('.load-more-btn');
         const searchInput = document.getElementById('faq-search');
@@ -1204,48 +1065,6 @@ mark {
         
         updateDisplay();
     });
-    // Menu mobile
-document.getElementById('mobile-menu').addEventListener('click', function() {
-    document.getElementById('main-menu').classList.toggle('active');
-});
-
-// Gestion des dropdowns
-document.querySelectorAll('.dropdown').forEach(dropdown => {
-    const toggle = dropdown.querySelector('.dropdown-toggle');
-    
-    toggle.addEventListener('click', function(e) {
-        if (window.innerWidth > 768) {
-            // Sur grand écran, comportement normal (hover)
-            return;
-        }
-        
-        // Sur mobile, empêche la navigation et active le dropdown
-        e.preventDefault();
-        dropdown.classList.toggle('active');
-        
-        // Ferme les autres dropdowns ouverts
-        document.querySelectorAll('.dropdown').forEach(otherDropdown => {
-            if (otherDropdown !== dropdown) {
-                otherDropdown.classList.remove('active');
-            }
-        });
-    });
-});
-
-// Ferme le menu quand on clique ailleurs
-document.addEventListener('click', function(e) {
-    if (window.innerWidth <= 768) {
-        const menu = document.getElementById('main-menu');
-        const mobileBtn = document.getElementById('mobile-menu');
-        
-        if (!menu.contains(e.target) && !mobileBtn.contains(e.target)) {
-            menu.classList.remove('active');
-            document.querySelectorAll('.dropdown').forEach(dropdown => {
-                dropdown.classList.remove('active');
-            });
-        }
-    }
-});
 </script>
 </body>
 </html>

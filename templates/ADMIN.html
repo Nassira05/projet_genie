@@ -4,182 +4,580 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Assistant Virtuel</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Réinitialisation du style de base */
+        :root {
+            --primary-50: #f0f9ff;
+            --primary-100: #e0f2fe;
+            --primary-200: #bae6fd;
+            --primary-300: #7dd3fc;
+            --primary-400: #38bdf8;
+            --primary-500: #0ea5e9;
+            --primary-600: #0284c7;
+            --primary-700: #0369a1;
+            --primary-800: #075985;
+            --primary-900: #0c4a6e;
+            
+            --secondary-50: #f8fafc;
+            --secondary-100: #f1f5f9;
+            --secondary-200: #e2e8f0;
+            --secondary-300: #cbd5e1;
+            --secondary-400: #94a3b8;
+            --secondary-500: #64748b;
+            --secondary-600: #475569;
+            --secondary-700: #334155;
+            --secondary-800: #1e293b;
+            --secondary-900: #0f172a;
+            
+            --success-500: #10b981;
+            --info-500: #3b82f6;
+            --warning-500: #f59e0b;
+            --error-500: #ef4444;
+            
+            --sidebar-bg: linear-gradient(160deg, var(--secondary-800) 0%, var(--secondary-900) 100%);
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --header-bg: rgba(255, 255, 255, 0.9);
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --border-radius: 12px;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        /* Corps de la page */
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--secondary-100);
+            color: var(--secondary-800);
             display: flex;
-            height: 100vh;
-        }
-        .admin-profile-img {
-            width: 500px;  /* Ajustez cette valeur selon la taille souhaitée */
-            height: 100px; /* Vous pouvez aussi ajuster la hauteur si nécessaire */
-            border-radius: 50%; /* Garde l'image ronde */
-            border: 3px solid #fff;  /* Ajoute une bordure blanche */
+            min-height: 100vh;
+            line-height: 1.6;
         }
 
-        /* Sidebar */
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Sidebar - Design Premium */
         .sidebar {
-            width: 260px;
-            background: linear-gradient(135deg, #6a5bff, #4e4a94);
-            color: white;
+            width: 300px;
+            background: var(--sidebar-bg);
+            height: 100vh;
             position: fixed;
-            height: 100%;
-            padding: 20px;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
+            padding: 2rem 1.5rem;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            z-index: 20;
+            transition: var(--transition-slow);
+            box-shadow: var(--shadow-xl);
+            border-right: none;
         }
 
         .admin-info {
-            margin-bottom: 30px;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem 0;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .admin-info::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
         }
 
         .admin-info img {
-            width: 70px;
-            height: 70px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
-            margin-bottom: 15px;
-            border: 3px solid #fff;
+            object-fit: cover;
+            margin-bottom: 1.25rem;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+            transition: var(--transition-slow);
+            filter: grayscale(10%);
+        }
+
+        .admin-info:hover img {
+            transform: scale(1.05);
+            border-color: var(--primary-400);
+            filter: grayscale(0%);
         }
 
         .admin-info p {
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.25rem;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-info span {
+            font-size: 0.85rem;
+            color: var(--primary-300);
+            font-weight: 500;
+            background: rgba(14, 165, 233, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            margin-top: 0.5rem;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .sidebar ul {
             list-style: none;
             width: 100%;
-            margin-top: 20px;
+         
         }
 
         .sidebar ul li {
-            width: 100%;
-            padding: 15px;
-            text-align: left;
-            border-radius: 5px;
-            transition: 0.3s;
+            margin-bottom: 0.4rem;
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--border-radius);
         }
 
         .sidebar ul li a {
-            text-decoration: none;
-            color: white;
             display: flex;
             align-items: center;
-            font-size: 16px;
+            padding: 0.85rem 1.25rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            color: rgba(255, 255, 255, 0.8);
+            position: relative;
+            z-index: 1;
         }
 
         .sidebar ul li a i {
-            margin-right: 10px;
+            width: 24px;
+            margin-right: 12px;
+            text-align: center;
+            font-size: 1.1rem;
+            transition: var(--transition);
         }
 
-        .sidebar ul li:hover {
-            background: #5d53cb;
-            cursor: pointer;
-            transform: scale(1.05);
+        .sidebar ul li a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: var(--transition-slow);
+            z-index: -1;
         }
 
-        /* Contenu principal */
+        .sidebar ul li:hover a {
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar ul li:hover a::before {
+            left: 100%;
+        }
+
+        .sidebar ul li.active a {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: inset 2px 0 0 var(--primary-400);
+        }
+
+        .sidebar ul li.active a i {
+            color: var(--primary-400);
+        }
+
+        /* Main Content - Design Premium */
         .main-content {
-            margin-left: 260px;
-            padding: 10px;
-            width: calc(100% - 260px);
-            background-color: #f4f7fa;
+            margin-left: 300px;
+            padding: 0;
+            width: calc(100% - 300px);
+            transition: var(--transition);
         }
 
         .dashboard-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: white;
-            padding: 20px 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem 2rem;
+            background: var(--header-bg);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
-        
-
 
         .dashboard-header h1 {
-            font-size: 24px;
-            color: #333;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary-800);
+            position: relative;
+            display: inline-block;
         }
 
-        .dashboard-header button {
-            padding: 10px 20px;
-            background-color: #6a5bff;
+        .dashboard-header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--primary-500);
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+
+        .dashboard-header h1:hover::after {
+            width: 100%;
+            background: linear-gradient(90deg, var(--primary-500), var(--primary-300));
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            padding: 0.7rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-400) 100%);
             border: none;
             color: white;
-            border-radius: 5px;
+            border-radius: var(--border-radius);
             cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
         }
 
-        .dashboard-header button:hover {
-            background-color: #4639d9;
+        .logout-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: var(--transition-slow);
         }
 
-        .section {
-            background: white;
-            padding: 22px;
-            margin-top: 30px;
-            border-radius: 13px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        /* Applique cette règle pour ne pas avoir de soulignement sur les liens */
-        a {
-            text-decoration: none;
-            color: inherit; /* L'héritage de la couleur du texte, si vous voulez garder la couleur du texte intacte */
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
-        /* Optionnel: style au survol pour les liens */
-        a:hover {
-            color: #6280e4; /* Vous pouvez changer cette couleur */
-            text-decoration: none; /* Assurez-vous que l'effet de soulignement n'apparaît pas au survol */
+        .logout-btn:hover::before {
+            left: 100%;
         }
 
-        .section h2 {
-            color: #333;
-            font-size: 22px;
-            margin-bottom: 20px;
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 2rem;
         }
 
-        /* Pied de page */
+        /* Dashboard Cards - Premium Design */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.75rem;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-500), var(--primary-300));
+        }
+
+        .dashboard-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.03) 0%, rgba(255, 255, 255, 0) 100%);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(14, 165, 233, 0.2);
+        }
+
+        .dashboard-card:hover::after {
+            opacity: 1;
+        }
+
+        .dashboard-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--secondary-800);
+            position: relative;
+            display: inline-block;
+        }
+
+        .dashboard-card h3::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--primary-500);
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+
+        .dashboard-card:hover h3::after {
+            width: 80px;
+            background: linear-gradient(90deg, var(--primary-500), var(--primary-300));
+        }
+
+        .dashboard-card p {
+            color: var(--secondary-500);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            font-size: 1.5rem;
+            transition: var(--transition);
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .dashboard-card:hover .card-icon {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .users-card .card-icon {
+            background: linear-gradient(135deg, var(--success-500) 0%, #34d399 100%);
+        }
+
+        .places-card .card-icon {
+            background: linear-gradient(135deg, var(--info-500) 0%, #60a5fa 100%);
+        }
+
+        .docs-card .card-icon {
+            background: linear-gradient(135deg, var(--warning-500) 0%, #fbbf24 100%);
+        }
+
+        .card-arrow {
+            color: var(--secondary-400);
+            font-size: 1.25rem;
+            transition: var(--transition);
+        }
+
+        .dashboard-card:hover .card-arrow {
+            color: var(--primary-500);
+            transform: translateX(5px);
+        }
+
+        /* Footer */
         .footer {
             text-align: center;
-            padding: 15px;
-            background: linear-gradient(135deg, #6a5bff, #4e4a94);
-            color: white;
-            border-radius: 10px;
-            margin-top: 90px;
+            padding: 1.75rem;
+            margin-top: 3rem;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            color: var(--secondary-500);
+            font-size: 0.9rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
-        /* Animation pour les sections */
+        /* Animations */
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-      
 
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .dashboard-card {
+            animation: fadeIn 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .dashboard-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+        .dashboard-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .dashboard-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .admin-info img {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .dashboard-cards {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 260px;
+                padding: 1.5rem 1rem;
+            }
+            
+            .main-content {
+                margin-left: 260px;
+                width: calc(100% - 260px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+                padding: 1.5rem 0.5rem;
+                align-items: center;
+            }
+            
+            .admin-info img {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .admin-info p, .admin-info span {
+                display: none;
+            }
+            
+            .sidebar ul li a {
+                justify-content: center;
+                padding: 0.85rem 0;
+            }
+            
+            .sidebar ul li a span {
+                display: none;
+            }
+            
+            .sidebar ul li a i {
+                margin-right: 0;
+                font-size: 1.25rem;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+                width: calc(100% - 80px);
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+                padding: 1.25rem;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-content {
+                padding: 1.5rem 1rem;
+            }
+            
+            .dashboard-card {
+                padding: 1.75rem 1.5rem;
+            }
+            
+            .footer {
+                padding: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -187,46 +585,108 @@
     <div class="sidebar">
         <div class="admin-info">
             <img src="{{ url_for('static', filename='image/vhh.jpg') }}" alt="Admin Profile">
-
-            <p><strong>Admin</strong></p>
+            <p>Administrateur</p>
+            <span>Admin</span>
         </div>
-        <ul>
-            <li><a href="{{ url_for('admin') }}"><i class="fas fa-home"></i> Tableau de bord</a></li>
-            <li><a href="{{ url_for('user') }}"><i class="fas fa-users"></i> Gérer les utilisateurs</a></li>
-            <li><a href="{{ url_for('lieux') }}"><i class="fas fa-map-marker-alt"></i> Gérer les lieux</a></li>
-
-            <li><a href="{{ url_for('docs') }}"><i class="fas fa-file"></i> Gérer les documents</a></li>
-            <li><a href="{{ url_for('deconnexion') }}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
-        </ul>
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="active">
+                    <a href="{{ url_for('admin') }}">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('user') }}">
+                        <i class="fas fa-users"></i>
+                        <span>Utilisateurs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('lieux') }}">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <span>Lieux</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('admin_messages') }}">
+                        <i class="fas fa-envelope"></i> 
+                        <span>Messages</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('docs') }}">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Documents</span>
+                    </a>
+                </li>
+            </ul>
+            <ul>
+                <li>
+                    <a href="{{ url_for('deconnexion') }}">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Déconnexion</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
 
     <div class="main-content">
-        <div class="dashboard-header">
-            <h1>Tableau de bord - Admin</h1>
-            <a href="{{ url_for('deconnexion') }}"><button>Déconnexion</button></a>
-        </div>
+        <header class="dashboard-header">
+            <h1>Tableau de bord Administrateur</h1>
+            <div class="header-actions">
+                <button class="logout-btn" onclick="window.location.href='{{ url_for('deconnexion') }}'">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Déconnexion
+                </button>
+            </div>
+        </header>
 
-        <a href="{{ url_for('user') }}"><div class="section">
-            <h2>Gérer les utilisateurs</h2>
-            <p>Voir les étudiants inscrits, Bloquez, débloquez ou supprimez des comptes utilisateurs.</p>
-        </div></a>
-        
+        <main class="dashboard-content">
+            <div class="dashboard-cards">
+                <a href="{{ url_for('user') }}" class="dashboard-card users-card">
+                    <div class="card-icon-container">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    <h3>Gérer les utilisateurs</h3>
+                    <p>Visualisez, modifiez ou supprimez les comptes utilisateurs. Gérez les accès et permissions avec une interface intuitive et puissante.</p>
+                </a>
 
-        <a href="{{ url_for('lieux') }}"><div class="section">
-            <h2>Gérer les lieux</h2>
-            <p>Ajoutez, modifiez ou supprimez des bâtiments et des lieux.</p>
-        </div>
-        </a>
+                <a href="{{ url_for('lieux') }}" class="dashboard-card places-card">
+                    <div class="card-icon-container">
+                        <div class="card-icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <div class="card-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    <h3>Gérer les lieux</h3>
+                    <p>Ajoutez, modifiez ou supprimez des bâtiments et des lieux dans l'application. Géolocalisation et détails complets disponibles.</p>
+                </a>
 
-        <a href="{{ url_for('docs') }}"><div class="section">
-            <h2>Gérer les documents</h2>
-            <p>Ajoutez, modifiez ou supprimez des documents administratifs.</p>
-        </div>
-        </a>
+                <a href="{{ url_for('docs') }}" class="dashboard-card docs-card">
+                    <div class="card-icon-container">
+                        <div class="card-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="card-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    <h3>Gérer les documents</h3>
+                    <p>Administrez les documents administratifs, modifiez les catégories et les accès. Système de versionning intégré.</p>
+                </a>
+            </div>
 
-        <div class="footer">
-            &copy; 2025 Assistant Virtuel - Tous droits réservés.
-        </div>
+          
+        </main>
     </div>
 
 </body>

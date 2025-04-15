@@ -257,7 +257,7 @@ def gestion():
 # Route pour Admin
 @app.route('/admin', endpoint='admin')
 def admin():
-    return render_template('admin.html')
+    return render_template('ADMIN.html')
 
 
 

@@ -2,12 +2,17 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 import secrets
-from werkzeug.utils import secure_filename  # 
+from werkzeug.utils import secure_filename  # ✅ Correct
 from datetime import datetime, date
 from sqlalchemy import desc
 import os
 from datetime import datetime, date, timedelta, time
+import json
+import re
 from sqlalchemy import create_engine
+
+import pymysql
+pymysql.install_as_MySQLdb()
 
 
 app = Flask(__name__)
@@ -16,17 +21,21 @@ app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
 
 # Configuration de la base de données MySQL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:BLHHHtLaXnryjOkEjhTazvmCGTRyxkTi@mysql.railway.internal:3306/railway'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:BLHHHtLaXnryjOkEjhTazvmCGTRyxkTi@yamabiko.proxy.rlwy.net:16438/railway'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Désactive la notification de modifications
 app.config['UPLOAD_FOLDER'] = 'uploads/'  # Répertoire pour stocker les fichiers
 app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'docx', 'txt'}  # Extensions de fichiers autorisées
 
 # Initialisation de SQLAlchemy
 db = SQLAlchemy(app)
-db_url=os.getenv("SQLALCHEMY_DATABASE_URI")
+
+db_url = app.config['SQLALCHEMY_DATABASE_URI']
+print("db_url =", db_url)
 engine=create_engine(db_url)
 
-## Modèle Utilisateur
+
+# Modèle Utilisateur
 class Utilisateur(db.Model):
     __tablename__ = 'utilisateur'
 
@@ -36,7 +45,7 @@ class Utilisateur(db.Model):
     email = db.Column(db.String(100), unique=True)
     mot_de_passe = db.Column(db.String(255))
     role = db.Column(db.String(50))
-    status = db.Column(db.String(255), default='en_attente')  # Par défaut "en_attente" après inscription
+    status = db.Column(db.String(255), default='en_attente')
 
 # Fonction pour ajouter un utilisateur dans la base de données
 def add_utilisateur_to_db(nom, prenom, email, password_hash):
@@ -54,7 +63,22 @@ def add_utilisateur_to_db(nom, prenom, email, password_hash):
     except Exception as e:
         db.session.rollback()
         flash(f"Erreur lors de l'insertion dans la base de données : {e}", "error")
+def is_password_strong(password):
+    """Vérifie si le mot de passe est suffisamment fort."""
+    if len(password) < 8:  # Changement ici : vérification de la longueur minimale
+        return False, "Le mot de passe doit contenir au moins 8 caractères."
+    if not re.search(r"[A-Z]", password):
+        return False, "Le mot de passe doit contenir au moins une lettre majuscule."
+    if not re.search(r"[a-z]", password):
+        return False, "Le mot de passe doit contenir au moins une lettre minuscule."
+    if not re.search(r"\d", password):
+        return False, "Le mot de passe doit contenir au moins un chiffre."
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        return False, "Le mot de passe doit contenir au moins un caractère spécial."
+    return True, None
 
+
+    
 @app.route('/')
 def avant_page():
     return render_template('avant_page.html')  # Une page simple de bienvenue ou d'introduction
@@ -66,24 +90,25 @@ def connexion_redirect():
 
 @app.route('/connexion_011737', methods=['GET', 'POST'])
 def connexion_011737():
-    message = None  # Par défaut, aucun message
+    message = None
 
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
 
-        # Connexion de l'administrateur avec un email et mot de passe prédéfinis
-        if email == 'admin@gmail.com' and password == '1234':
-            session['utilisateur_id'] = 'admin'  # Indiquer que l'admin est connecté
+        # Connexion de l'administrateur
+        if email == 'admin@gmail.com' and password == '123456789admin?':
+            session['utilisateur_id'] = 'admin'
             return redirect(url_for('admin'))
 
-        # Vérifiez si l'email existe dans la base de données pour l'étudiant
+        # Vérification des informations d'identification de l'étudiant
         utilisateur = Utilisateur.query.filter_by(email=email).first()
 
         if utilisateur:
-            # Vérification du mot de passe
-            if check_password_hash(utilisateur.mot_de_passe, password):
-                # Vérification du statut de l'utilisateur
+            # Vérification de la longueur du mot de passe lors de la connexion
+            if len(password) < 8:
+                message = "Mot de passe trop court. Veuillez utiliser au moins 8 caractères."
+            elif check_password_hash(utilisateur.mot_de_passe, password):
                 if utilisateur.status == 'bloqué':
                     message = "Votre compte a été bloqué. Vous ne pouvez pas vous connecter."
                 elif utilisateur.status == 'supprimé':
@@ -92,7 +117,8 @@ def connexion_011737():
                     message = "Votre compte est en attente d'activation par un administrateur. Vous pourrez vous connecter dès qu'il sera validé."
                 elif utilisateur.status == 'actif':
                     session['utilisateur_id'] = utilisateur.id_uti
-                    return redirect(url_for('page_acceuil'))  # Redirige vers la page d'accueil des étudiants
+                    session['prenom_utilisateur'] = utilisateur.prenom 
+                    return redirect(url_for('page_acceuil'))
             else:
                 message = "Mot de passe incorrect."
         else:
@@ -103,45 +129,112 @@ def connexion_011737():
 @app.route('/inscription', methods=['GET', 'POST'])
 def inscription():
     if request.method == 'POST':
-        # Vérifie si tous les champs sont bien présents dans le formulaire
-        if 'nom' not in request.form or 'prenom' not in request.form or 'email' not in request.form or 'password' not in request.form or 'confirm-password' not in request.form:
-            flash("Certains champs sont manquants.", "error")
+        try:
+            # Vérification des champs du formulaire
+            if not all(field in request.form for field in ['nom', 'prenom', 'email', 'password', 'confirm-password']):
+                flash("Tous les champs sont obligatoires. Veuillez réessayer.", "error")
+                return redirect(url_for('inscription'))
+
+            nom = request.form['nom']
+            prenom = request.form['prenom']
+            email = request.form['email']
+            password = request.form['password']
+            confirm_password = request.form['confirm-password']
+
+            # Vérification de la longueur du mot de passe
+            if len(password) < 8:
+                flash("Le mot de passe doit contenir au moins 8 caractères. Veuillez réessayer.", "error")
+                return redirect(url_for('inscription'))
+
+            # Vérification de la complexité du mot de passe
+            is_strong, message = is_password_strong(password)
+            if not is_strong:
+                flash(f"{message} Veuillez réessayer.", "error")
+                return redirect(url_for('inscription'))
+
+            # Vérification de la correspondance des mots de passe
+            if password != confirm_password:
+                flash("Les mots de passe ne correspondent pas. Veuillez réessayer.", "error")
+                return redirect(url_for('inscription'))
+
+            # Vérification de l'email unique
+            if Utilisateur.query.filter_by(email=email).first():
+                flash("Cet email est déjà utilisé. Veuillez réessayer avec un autre email.", "error")
+                return redirect(url_for('inscription'))
+
+            # Hachage du mot de passe et enregistrement
+            password_hash = generate_password_hash(password)
+            add_utilisateur_to_db(nom, prenom, email, password_hash)
+
+               # Après succès
+            flash("🎉 Inscription réussie! Vous pouvez maintenant vous connecter.", "success")
+            return redirect(url_for('connexion_011737', _anchor='message-container'))
+
+        except Exception as e:
+            flash("❌ Une erreur s'est produite lors de l'inscription. Veuillez réessayer.", "error")
+            # Loggez l'erreur pour le débogage
+            print(f"Erreur lors de l'inscription: {str(e)}")
             return redirect(url_for('inscription'))
-
-        # Récupérer les valeurs des champs
-        nom = request.form['nom']
-        prenom = request.form['prenom']
-        email = request.form['email']
-        password = request.form['password']
-        confirm_password = request.form['confirm-password']
-
-        # Vérifiez que les mots de passe correspondent
-        if password != confirm_password:
-            flash("Les mots de passe ne correspondent pas", "error")
-            return redirect(url_for('inscription'))
-
-        # Vérifiez si l'email est déjà utilisé
-        if Utilisateur.query.filter_by(email=email).first():
-            flash("L'email est déjà utilisé", "error")
-            return redirect(url_for('inscription'))
-
-        # Hacher le mot de passe et l'enregistrer dans la base de données
-        password_hash = generate_password_hash(password)
-        add_utilisateur_to_db(nom, prenom, email, password_hash)
-
-        flash("Inscription réussie, vous pouvez maintenant vous connecter", "success")
-        
-        # Redirigez l'utilisateur vers la page des utilisateurs
-        return redirect(url_for('connexion_011737'))  # Page des utilisateurs après inscription réussie
 
     return render_template('inscription.html')
 
 
 @app.route('/page_acceuil')
 def page_acceuil():
-    # Récupérer le nom de l'utilisateur depuis la session
-    nom_utilisateur = session.get('nom_utilisateur', 'Invité')  # "Invité" par défaut si aucun nom n'est trouvé
-    return render_template('page_acceuil.html', nom_utilisateur=nom_utilisateur)
+    prenom_utilisateur = session.get('prenom_utilisateur', 'Invité')
+    return render_template('page_acceuil.html', prenom_utilisateur=prenom_utilisateur)
+
+
+@app.route('/admin/messages')
+def admin_messages():
+    # Récupère tous les messages triés par date (du plus récent au plus ancien)
+    messages = ContactMessage.query.order_by(ContactMessage.created_at.desc()).all()
+    return render_template('admin_messages.html', messages=messages)
+
+
+class ContactMessage(db.Model):
+    __tablename__ = 'contact_messages'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+ 
+    def __repr__(self):
+        return f'<ContactMessage {self.name}>'
+
+@app.route('/submit_contact', methods=['POST'])
+def submit_contact():
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        message = request.form['message']
+        
+        # Créer un nouveau message
+        new_message = ContactMessage(
+            name=name,
+            email=email,
+            message=message
+        )
+        
+        try:
+            db.session.add(new_message)
+            db.session.commit()
+            flash('Votre message a été envoyé avec succès! Nous vous répondrons dès que possible.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Erreur lors de l'envoi du message: {str(e)}", 'error')
+        
+        return redirect(url_for('page_acceuil'))
+    
+
+
+
+
+
+
+
 
 # Route pour la page de renseignement
 @app.route('/renseignement')
@@ -175,6 +268,10 @@ def gestion():
 @app.route('/admin', endpoint='admin')
 def admin():
     return render_template('admin.html')
+
+
+
+
 
 
 @app.route('/user')
@@ -317,6 +414,9 @@ def supprimer_lieu(index):
     else:
         flash("Lieu non trouvé!", "danger")
         return redirect(url_for('lieux'))  # Redirige si le lieu n'existe pas
+
+
+
 
 # Modèle Document
 class Document(db.Model):
@@ -465,21 +565,15 @@ def deconnexion():
 @app.route('/chatbox', methods=['GET', 'POST'])
 def chatbox():
     if request.method == 'POST':
-        # Récupère le message de l'utilisateur
         user_message = request.form['message']
-
-        # Réponse du bot (ici on utilise une logique simple pour l'exemple)
         bot_response = get_bot_response(user_message)
-
-        # Retourne la réponse du bot
         return jsonify({"response": bot_response})
 
-    return render_template('chatbox.html')  # Retourne la vue de la chatbox
+    return render_template('chatbox.html')
 
 def get_bot_response(user_message):
-    # Dictionnaire de réponses pour des questions spécifiques
     responses = {
-        "Salut" : "Oui , Salut",
+        "salut": "Salut! Comment puis-je vous aider aujourd'hui?",
         "bonjour": "Salut! Comment puis-je vous aider aujourd'hui?",
         "bonsoir": "Salut! Comment puis-je vous aider aujourd'hui?",
         "bsr": "Salut! Comment puis-je vous aider aujourd'hui?",
@@ -488,7 +582,6 @@ def get_bot_response(user_message):
         "bye": "Au revoir! À bientôt!",
         "help": "Je suis là pour vous aider. Que puis-je faire pour vous?",
         "aide moi": "Je suis là pour vous aider. Que puis-je faire pour vous?",
-        # Université
         "université": "L'université offre une large gamme de formations. Que voulez-vous savoir à propos de l'université?",
         "universite de djibouti": "L'université offre une large gamme de formations. Que voulez-vous savoir à propos de l'université?",
         "quelles sont les formations disponibles?": "Nous proposons des formations en informatique, droit, médecine, etc. Voulez-vous plus de détails?",
@@ -499,11 +592,20 @@ def get_bot_response(user_message):
         "comment s'inscrire?": "Vous pouvez vous inscrire directement sur notre site en remplissant le formulaire d'inscription et en téléchargeant les documents requis.",
         "date limite d'inscription": "La date limite pour l'inscription est le 30 juin de chaque année.",
         "documents nécessaires": "Les documents nécessaires pour l'inscription sont : votre pièce d'identité, vos relevés de notes et votre diplôme (si disponible).",
-        # Réponses par défaut
+        "frais d'inscription": "Les frais d'inscription varient en fonction du programme. Veuillez consulter notre site web pour plus de détails.",
+        "bourses disponibles": "Oui, nous offrons des bourses basées sur le mérite et les besoins financiers. Voulez-vous plus d'informations?",
+        "logement étudiant": "L'université dispose de résidences étudiantes. Les places sont limitées, il est conseillé de faire une demande tôt.",
+        "activités étudiantes": "Nous avons de nombreux clubs et associations étudiantes. Il y a toujours quelque chose à faire sur le campus!",
+        "bibliothèque": "La bibliothèque de l'université est ouverte de 8h à 22h du lundi au vendredi.",
+        "services de santé": "Nous avons un service de santé sur le campus avec des médecins et des infirmières disponibles.",
+        "emplois étudiants": "Oui, nous offrons des emplois à temps partiel sur le campus. Consultez le bureau des services aux étudiants pour plus d'informations.",
+        "cours en ligne": "Certains de nos cours sont disponibles en ligne. Veuillez consulter notre site web pour la liste complète.",
+        "programmes d'échange": "Oui, nous avons des programmes d'échange avec plusieurs universités à l'étranger.",
+        "contacts utiles": "Vous pouvez contacter le bureau des admissions pour toute question concernant l'inscription.",
+        "ou se trouve l'universite?": "L'université est située à Djibouti-ville. Voici l'adresse exacte : ...",
         "default": "Désolé, je n'ai pas compris. Pouvez-vous reformuler ?"
     }
 
-    # Recherche de la meilleure réponse
     for key, response in responses.items():
         if key in user_message.lower():
             return response
@@ -717,6 +819,15 @@ def telecharger(document_id):
         as_attachment=True,
         download_name=doc.titre_document + os.path.splitext(doc.lien_fichier)[1]  # Garde l'extension (.pdf, .docx)
     )
+
+
+
+@app.route('/carte')
+def carte():
+    return render_template('carte.html')
+
+
+
 
 if __name__ == "__main__":
     with app.app_context():  # Créer un contexte d'application

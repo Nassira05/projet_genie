@@ -2,18 +2,13 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 import secrets
-from werkzeug.utils import secure_filename  # ✅ Correct
-from datetime import datetime, date
-from sqlalchemy import desc
-import os
+from werkzeug.utils import secure_filename
 from datetime import datetime, date, timedelta, time
-import json
-import re
 from sqlalchemy import create_engine
-
 import pymysql
-pymysql.install_as_MySQLdb()
 
+# Installation de pymysql en tant que MySQLdb
+pymysql.install_as_MySQLdb()
 
 app = Flask(__name__)
 
@@ -22,17 +17,12 @@ app.secret_key = secrets.token_hex(16)
 
 # Configuration de la base de données MySQL
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:BLHHHtLaXnryjOkEjhTazvmCGTRyxkTi@yamabiko.proxy.rlwy.net:16438/railway'
-
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Désactive la notification de modifications
 app.config['UPLOAD_FOLDER'] = 'uploads/'  # Répertoire pour stocker les fichiers
 app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'docx', 'txt'}  # Extensions de fichiers autorisées
 
 # Initialisation de SQLAlchemy
 db = SQLAlchemy(app)
-
-db_url = app.config['SQLALCHEMY_DATABASE_URI']
-print("db_url =", db_url)
-engine=create_engine(db_url)
 
 
 # Modèle Utilisateur

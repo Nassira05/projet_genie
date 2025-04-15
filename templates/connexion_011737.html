@@ -188,6 +188,17 @@
   </style>
 </head>
 <body>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
   <div class="login-container animate__animated animate__fadeInUp">
     <div class="logo">
       <h1>Start<span>Uni</span></h1>

@@ -7,6 +7,7 @@ from datetime import datetime, date
 from sqlalchemy import desc
 import os
 from datetime import datetime, date, timedelta, time
+from sqlalchemy import create_engine
 
 
 app = Flask(__name__)
@@ -15,13 +16,15 @@ app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
 
 # Configuration de la base de données MySQL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/assistante_virtuelle'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:BLHHHtLaXnryjOkEjhTazvmCGTRyxkTi@mysql.railway.internal:3306/railway'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Désactive la notification de modifications
 app.config['UPLOAD_FOLDER'] = 'uploads/'  # Répertoire pour stocker les fichiers
 app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'docx', 'txt'}  # Extensions de fichiers autorisées
 
 # Initialisation de SQLAlchemy
 db = SQLAlchemy(app)
+db_url=os.getenv("SQLALCHEMY_DATABASE_URI")
+engine=create_engine(db_url)
 
 ## Modèle Utilisateur
 class Utilisateur(db.Model):
